@@ -9,7 +9,7 @@ import  templogo from '../Images/templogo.png'
 
 export default function DenseAppBar(props) {
   return (
-    <Box sx={{ flexGrow: 1,  }}>
+    <Box sx={{ flex:1  }}>
       <AppBar position="static" sx={{backgroundColor:'#FF6B35'}}>
         <Toolbar  >
           {/* <IconButton edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }}>

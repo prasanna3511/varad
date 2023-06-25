@@ -85,6 +85,58 @@ const initialRows = [
     gst:121225
 
   },
+  {
+    id: randomId(),
+    name: randomTraderName(),
+    product_id: 23,
+    joinDate: 55,
+    role: randomRole(),
+    hsn_number:20,
+    unit:40,
+    gst:121225
+
+  },
+  {
+    id: randomId(),
+    name: randomTraderName(),
+    product_id: 23,
+    joinDate: 55,
+    role: randomRole(),
+    hsn_number:20,
+    unit:40,
+    gst:121225
+
+  },{
+    id: randomId(),
+    name: randomTraderName(),
+    product_id: 23,
+    joinDate: 55,
+    role: randomRole(),
+    hsn_number:20,
+    unit:40,
+    gst:121225
+
+  },{
+    id: randomId(),
+    name: randomTraderName(),
+    product_id: 23,
+    joinDate: 55,
+    role: randomRole(),
+    hsn_number:20,
+    unit:40,
+    gst:121225
+
+  },{
+    id: randomId(),
+    name: randomTraderName(),
+    product_id: 23,
+    joinDate: 55,
+    role: randomRole(),
+    hsn_number:20,
+    unit:40,
+    gst:121225
+
+  },
 ];
 
 function EditToolbar(props) {
@@ -116,6 +168,8 @@ export default function FullFeaturedCrudGrid() {
 
 const handleRowClick=(row)=>{
     console.log(row)
+  setOpen(!open)
+
 }
 
   const columns = [
@@ -227,52 +281,7 @@ const handleRowClick=(row)=>{
       
           },
       },
-    // {
-    //   field: 'actions',
-    //   type: 'actions',
-    //   headerName: 'Actions',
-    //   width: 180,
-    //   cellClassName: 'actions',
-    //   getActions: ({ id }) => {
-    //     const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
-
-    //     if (isInEditMode) {
-    //       return [
-    //         <GridActionsCellItem
-    //           icon={<SaveIcon />}
-    //           label="Save"
-    //           sx={{
-    //             color: 'primary.main',
-    //           }}
-    //           onClick={handleSaveClick(id)}
-    //         />,
-    //         <GridActionsCellItem
-    //           icon={<CancelIcon />}
-    //           label="Cancel"
-    //           className="textPrimary"
-    //           onClick={handleCancelClick(id)}
-    //           color="inherit"
-    //         />,
-    //       ];
-    //     }
-
-    //     return [
-    //       <GridActionsCellItem
-    //         icon={<EditIcon />}
-    //         label="Edit"
-    //         className="textPrimary"
-    //         onClick={handleEditClick(id)}
-    //         color="inherit"
-    //       />,
-    //       <GridActionsCellItem
-    //         icon={<DeleteIcon />}
-    //         label="Delete"
-    //         onClick={handleDeleteClick(id)}
-    //         color="inherit"
-    //       />,
-    //     ];
-    //   },
-    // },
+    
   ];
 
   return (
@@ -293,14 +302,16 @@ const handleRowClick=(row)=>{
        display:'flex',
        justifyContent: 'center',
        flexDirection:'column',
-    //    alignItems: 'center',
+       alignItems: 'center',
+    //    my:0.1
       }}
     >
-        <Box sx={{width:'100%' , my:2}} >
+      
+        <Box sx={{width:'100%' , height:'100%',}} >
         <Navbar name={' Retail Management'} />
+        <Box sx={{width:'80%' , height:'100%', mx:'10%' }} >
 
-        </Box>
-        <Box sx={{width:'80%' , height:'100%', justifyContent:'center' , alignItems:'center', alignSelf:'center',my:2}} >
+
       <Box sx={{width:'100%' ,display:'flex' , justifyContent:"flex-end" }} >
       <Button color="primary" startIcon={<AddIcon />} onClick={handleClick} sx={{border:1 , backgroundColor:'#3457D5' , color:'white', fontSize:12 , mx:2,my:1}} >
         Add Product
@@ -334,6 +345,8 @@ const handleRowClick=(row)=>{
       />
         </Box>
         {        open && <AddInventory open={open} setOpen={setOpen}  />}
+
+        </Box>
 
     </Box>
   );
