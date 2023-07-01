@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Box, Button, TextField, Typography } from "@mui/material";
 // import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 
 const login = require("../Images/loginvarad.png");
@@ -9,18 +10,41 @@ const login = require("../Images/loginvarad.png");
 export default function Login() {
   const navigate = useNavigate();
 
-  const [data , setData ] = useState({})
+  const [data, setData] = useState({})
   const handleChange = (key, value) => {
-    console.log(key, value);
     setData({
       ...data,
       [key]: value,
     });
   };
 
-  const handleSubmit=()=>{
+  const handleSubmit = async () => {
     console.log(data)
-    navigate('/dashboard')
+
+    try {
+
+      let response = await axios.post(`${process.env.REACT_APP_API_URL}/signin`, data,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+
+
+
+      if (response.data.status) {
+        localStorage.setItem('user_id', response.data.id)
+        navigate('/dashboard')
+      }
+
+
+    } catch (err) {
+      alert('Invalid Credentials')
+      console.log(err)
+    }
+
+    // navigate('/dashboard')
 
   }
   return (
@@ -47,40 +71,40 @@ export default function Login() {
         }}
       >
         {/* display: { xs: '', md: 'block' } , */}
-        
+
         {/* login fields */}
         <Box
           sx={{
             width: 400,
             display: "flex",
             justifyContent: "center",
-            alignItems:'center',
+            alignItems: 'center',
             flexDirection: "column",
-            mx:1
+            mx: 1
           }}
         >
           <Box sx={{ width: "90%", my: 1 }}>
-            <Typography sx={{ my: 0.5}} >Email</Typography>
+            <Typography sx={{ my: 0.5 }} >Email</Typography>
             <TextField
               fullWidth
               size="small"
               placeholder="Email"
-              value={data.name}
+              value={data.email}
               onChange={(e) => {
-                handleChange("name", e.target.value);
+                handleChange("email", e.target.value);
               }}
             />
           </Box>
           <Box sx={{ width: "90%", my: 1 }}>
-            <Typography sx={{ my: 0.5}} >Password</Typography>
+            <Typography sx={{ my: 0.5 }} >Password</Typography>
             <TextField
               fullWidth
               size="small"
               id="outlined-basic"
               placeholder="Password"
-              value={data.password  }
+              value={data.password}
               onChange={(e) => {
-                handleChange("password  ", e.target.value);
+                handleChange("password", e.target.value);
               }}
             />
             <Box sx={{ display: "flex", justifyContent: "flex-end", my: 0.5 }}>
@@ -90,18 +114,18 @@ export default function Login() {
             </Box>
           </Box>
           <Box sx={{ width: "90%", my: 1 }}>
-          {/* <Link to='/dashboard'> */}
-          <Button
+            {/* <Link to='/dashboard'> */}
+            <Button
               sx={{ width: "100%", backgroundColor: "#4158E0" }}
               variant="contained"
               onClick={handleSubmit}
             >
               Login
-            </Button> 
+            </Button>
             {/* </Link> */}
-        
+
           </Box>
-          
+
           <Box
             sx={{
               width: "90%",
@@ -114,18 +138,18 @@ export default function Login() {
             <Typography>Don't have an account?</Typography>
             <Typography>Signup</Typography>
 
-          
+
           </Box>
-          
+
         </Box>
-        <Box sx={{ width:'50%'}}>
+        <Box sx={{ width: '50%' }}>
           <img src={login} alt="hello" style={{ width: '100%', margin: 5 }} />
         </Box>
       </Box>
-    
-      <Box sx={{width:'80%' ,mt:0.5, display:'flex' , justifyContent:'center' , alignItems:'center'}}>
-          <Typography sx={{fontSize:10}} >@2023 ORIONSOFT TECH SERVICES PRIVATE LIMITED. All Rights Reserved </Typography>
-        </Box>
+
+      <Box sx={{ width: '80%', mt: 0.5, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Typography sx={{ fontSize: 10 }} >@2023 ORIONSOFT TECH SERVICES PRIVATE LIMITED. All Rights Reserved </Typography>
+      </Box>
     </Box>
   );
 }
