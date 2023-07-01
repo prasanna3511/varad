@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
@@ -23,7 +23,8 @@ import { display } from '@mui/system';
 import AddRetail from '../../components/Managment/AddRetail'
 import { Typography } from '@mui/material';
 import { ReportGmailerrorred } from '@mui/icons-material';
- 
+import axios from 'axios';
+
 
 const roles = ['Market', 'Finance', 'Development'];
 const randomRole = () => {
@@ -32,125 +33,16 @@ const randomRole = () => {
 };
 
 
-const initialRows = [
-  {
-    id: randomId(),
-    name: 'prasanna',
-    retailer_id: 25,
-    mobile_no:1234567891,
-    role: randomRole(),
-    route_id:20,
-    email:'orignsoft@ReportGmailerrorred.com',
-    gst:121225
-  },
-  {
-    id: randomId(),
-    name: randomTraderName(),
-    retailer_id: 36,
-    mobile_no:1234567891,
-    role: randomRole(),
-    route_id:20,
-    email:'orignsoft@ReportGmailerrorred.com',
-    gst:121225
-
-  },
-  {
-    id: randomId(),
-    name: randomTraderName(),
-    retailer_id: 19,
-    mobile_no:1234567891,
-    role: randomRole(),
-    route_id:20,
-    email:'orignsoft@ReportGmailerrorred.com',
-    gst:121225
-
-  },
-  {
-    id: randomId(),
-    name: randomTraderName(),
-    retailer_id: 28,
-    mobile_no:1234567891,
-    role: randomRole(),
-    route_id:20,
-    email:'orignsoft@ReportGmailerrorred.com',
-    gst:121225
-
-  },
-  {
-    id: randomId(),
-    name: randomTraderName(),
-    retailer_id: 23,
-    mobile_no:1234567891,
-    role: randomRole(),
-    route_id:20,
-    email:'orignsoft@ReportGmailerrorred.com',
-    gst:121225
-
-  },
-  {
-    id: randomId(),
-    name: randomTraderName(),
-    retailer_id: 23,
-    mobile_no:1234567891,
-    role: randomRole(),
-    route_id:20,
-    email:'orignsoft@ReportGmailerrorred.com',
-    gst:121225
-
-  },
-  {
-    id: randomId(),
-    name: randomTraderName(),
-    retailer_id: 23,
-    mobile_no:1234567891,
-    role: randomRole(),
-    route_id:20,
-    email:'orignsoft@ReportGmailerrorred.com',
-    gst:121225
-
-  },{
-    id: randomId(),
-    name: randomTraderName(),
-    retailer_id: 23,
-    mobile_no:1234567891,
-    role: randomRole(),
-    route_id:20,
-    email:'orignsoft@ReportGmailerrorred.com',
-    gst:121225
-
-  },{
-    id: randomId(),
-    name: randomTraderName(),
-    retailer_id: 23,
-    mobile_no:1234567891,
-    role: randomRole(),
-    route_id:20,
-    email:'orignsoft@Gmail.com',
-    gst:121225
-
-  },{
-    id: randomId(),
-    name: randomTraderName(),
-    retailer_id: 23,
-    mobile_no:1234567891,
-    role: randomRole(),
-    route_id:20,
-    email:'orignsoft@ReportGmailerrorred.com',
-    gst:121225
-
-  },
-];
-
 function EditToolbar(props) {
   const { setRows, setRowModesModel } = props;
 
-  const [open , setOpen] = React.useState(false)
+  const [open, setOpen] = React.useState(false)
   const handleClick = () => {
-  setOpen(!open)
+    setOpen(!open)
   };
 
   return (
-    <GridToolbarContainer sx={{display:'flex' , justifyContent:'flex-end' , alignItems:'center'}} >
+    <GridToolbarContainer sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }} >
       {/* <Button color="primary" startIcon={<AddIcon />} onClick={handleClick} sx={{border:1 , backgroundColor:'#3457D5' , color:'white', fontSize:12 , mx:2,my:1}} >
         Add Product
       </Button> */}
@@ -161,131 +53,159 @@ function EditToolbar(props) {
 }
 
 export default function FullFeaturedCrudGrid() {
-  const [rows, setRows] = React.useState(initialRows);
-  const [rowModesModel, setRowModesModel] = React.useState({});
-  const [open , setOpen] = React.useState(false)
-  const [forUpdate, setForUpdate] = React.useState(false)
+  const [ data, setData] = useState([]);
+  const [rowModesModel, setRowModesModel] = useState({});
+  const [open, setOpen] = useState(false)
+  const [forUpdate, setForUpdate] = useState(false)
+
+  useEffect(() => {
+
+    async function fetchData() {
+
+      try {
+
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/getretailers`)
+
+        if (response.data.status) {
+          console.log(response.data.data)
+          setData(response.data.data)
+        }
+
+      } catch (e) {
+
+        console.log(e);
+
+      }
+    }
+
+    fetchData();
+
+  }, [])
+
+
+
   const handleClick = () => {
-  setOpen(!open)
+    setOpen(!open)
   };
 
-const handleRowClick=(row)=>{
+  const handleRowClick = (row) => {
     console.log(row)
-  setOpen(!open)
-  setForUpdate(true)
+    setOpen(!open)
+    setForUpdate(true)
 
-}
+  }
 
   const columns = [
-    { field: 'name',
-     headerName: 'Product Name',
-      width: 180,
-       editable: true,
-         align: 'center',
-    headerAlign: 'center',
-    renderCell: (params)=>{
-        return<> 
-        <Typography
-        sx={{}}
-         onClick={()=>{
-          handleRowClick(params.row)
-        }}>{params.row.name}</Typography>
-        </>      
-      }, 
-},
     {
-      field: 'retailer_id',
+      field: 'id',
       headerName: 'Retailer Id',
       type: 'number',
       width: 180,
       align: 'center',
       headerAlign: 'center',
       editable: true,
-      renderCell: (params)=>{
-        return<> 
-        <Typography
-        sx={{}}
-         onClick={()=>{
-          handleRowClick(params.row)
-        }}>{params.row.retailer_id}</Typography>
-        </>      
+      renderCell: (params) => {
+        return <>
+          <Typography
+            sx={{}}
+            onClick={() => {
+              handleRowClick(params.row)
+            }}>{params.row.id}</Typography>
+        </>
       },
     },
     {
-      field: 'mobile_no',
-      headerName: 'Mobile Number',
-    //   type: 'date',
+      field: 'name',
+      headerName: 'Retailer Name',
       width: 180,
       editable: true,
       align: 'center',
       headerAlign: 'center',
-      renderCell: (params)=>{
-        return<> 
-        <Typography
-        sx={{}}
-         onClick={()=>{
-          handleRowClick(params.row)
-        }}>{params.row.mobile_no}</Typography>
-        </>      
+      renderCell: (params) => {
+        return <>
+          <Typography
+            sx={{}}
+            onClick={() => {
+              handleRowClick(params.row)
+            }}>{params.row.name}</Typography>
+        </>
+      },
+    },
+    {
+      field: 'mbl_number',
+      headerName: 'Mobile Number',
+      //   type: 'date',
+      width: 180,
+      editable: true,
+      align: 'center',
+      headerAlign: 'center',
+      renderCell: (params) => {
+        return <>
+          <Typography
+            sx={{}}
+            onClick={() => {
+              handleRowClick(params.row)
+            }}>{params.row.mbl_number}</Typography>
+        </>
       },
     },
     {
       field: 'email',
       headerName: 'Email ',
-    //   type: 'number',
+      //   type: 'number',
       align: 'center',
       headerAlign: 'center',
       width: 220,
       editable: true,
-      renderCell: (params)=>{
-        return<> 
-        <Typography
-        sx={{ overflow:'hidden'}}
-         onClick={()=>{
-          handleRowClick(params.row,'update')
-        }}>{params.row.email}</Typography>
-        </>      
+      renderCell: (params) => {
+        return <>
+          <Typography
+            sx={{ overflow: 'hidden' }}
+            onClick={() => {
+              handleRowClick(params.row, 'update')
+            }}>{params.row.email}</Typography>
+        </>
       },
 
     },
     {
-        field: 'route_id',
-        headerName: 'Route Id',
-        // type: 'number',
-        width: 180,  align: 'center',
-        headerAlign: 'center',
-        editable: true,
-        renderCell: (params)=>{
-            return<> 
-            <Typography
+      field: 'route_name',
+      headerName: 'Route Name',
+      // type: 'number',
+      width: 180, align: 'center',
+      headerAlign: 'center',
+      editable: true,
+      renderCell: (params) => {
+        return <>
+          <Typography
             sx={{}}
-             onClick={()=>{
+            onClick={() => {
               handleRowClick(params.row)
-            }}>{params.row.route_id}</Typography>
-            </>      
-          },
+            }}>{params.row.route_name}</Typography>
+        </>
       },
-      {
-        field: 'gst',
-        headerName: 'GST',
-        // type: 'number',
-        width: 180,  align: 'center',
-        headerAlign: 'center',
-        editable: true,
-        renderCell: (params)=>{
-            return<>
-            
-            <Typography
+    },
+    {
+      field: 'gst_number',
+      headerName: 'GST Number',
+      // type: 'number',
+      width: 180, align: 'center',
+      headerAlign: 'center',
+      editable: true,
+      renderCell: (params) => {
+        return <>
+
+          <Typography
             sx={{}}
-             onClick={()=>{
+            onClick={() => {
               handleRowClick(params.row)
-            }}>{params.row.gst}</Typography>
-            </>
-      
-      
-          },
+            }}>{params.row.gst_number}</Typography>
+        </>
+
+
       },
-    
+    },
+
   ];
 
   return (
@@ -300,57 +220,54 @@ const handleRowClick=(row)=>{
           color: 'text.primary',
         },
         '& .element.style': {
-            color:'white',
-            backgroundColor:'green'
+          color: 'white',
+          backgroundColor: 'green'
         },
-       display:'flex',
-       justifyContent: 'center',
-       flexDirection:'column',
-       alignItems: 'center',
-    //    my:0.1
+        display: 'flex',
+        justifyContent: 'center',
+        flexDirection: 'column',
+        alignItems: 'center',
+        //    my:0.1
       }}
     >
-      
-        <Box sx={{width:'100%' , height:'100%',}} >
+
+      <Box sx={{ width: '100%', height: '100%', }} >
         <Navbar name={' Retail Management'} />
-        <Box sx={{width:'80%' , height:'100%', mx:'10%' }} >
+        <Box sx={{ width: '80%', height: '100%', mx: '10%' }} >
 
 
-      <Box sx={{width:'100%' ,display:'flex' , justifyContent:"flex-end" }} >
-      <Button color="primary" startIcon={<AddIcon />} onClick={handleClick} sx={{border:1 , backgroundColor:'#3457D5' , color:'white', fontSize:12 , mx:2,my:1}} >
-        Add Product
-      </Button>
-      </Box>
+          <Box sx={{ width: '100%', display: 'flex', justifyContent: "flex-end" }} >
+            <Button color="primary" startIcon={<AddIcon />} onClick={handleClick} sx={{ border: 1, backgroundColor: '#3457D5', color: 'white', fontSize: 12, mx: 2, my: 1 }} >
+              Add Product
+            </Button>
+          </Box>
 
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        editMode="row"
-        rowModesModel={rowModesModel}
-        // onRowModesModelChange={handleRowModesModelChange}
-        // onRowEditStop={handleRowEditStop}
-        // processRowUpdate={processRowUpdate}
-        slots={{
-          toolbar: EditToolbar,
-        }}
-        slotProps={{
-          toolbar: { setRows, setRowModesModel },
-        }}
-        sx={
-            {
+          <DataGrid
+            rows={data}
+            columns={columns}
+            editMode="row"
+            rowModesModel={rowModesModel}
+            // onRowModesModelChange={handleRowModesModelChange}
+            // onRowEditStop={handleRowEditStop}
+            // processRowUpdate={processRowUpdate}
+            slots={{
+              toolbar: EditToolbar,
+            }}
+            sx={
+              {
                 '& .element.style': {
-                    color:'white',
-                    backgroundColor:'green'
-                } ,
-                display:'flex', width:'100%',boxShadow:5,
-               
-            }
-        }
-      />
-        </Box>
-        {        open && <AddRetail open={open} setOpen={setOpen} update={forUpdate} />}
+                  color: 'white',
+                  backgroundColor: 'green'
+                },
+                display: 'flex', width: '100%', boxShadow: 5,
 
+              }
+            }
+          />
         </Box>
+        {open && <AddRetail open={open} setOpen={setOpen} update={forUpdate} />}
+
+      </Box>
 
     </Box>
   );
