@@ -14,6 +14,10 @@ const handleinventory=()=>{
 const handleretail=()=>{
     navigate('/retail')
 }
+const handlebill=()=>{
+  navigate('/bill')
+
+}
   return (
     <Box
       sx={{
@@ -158,6 +162,7 @@ const handleretail=()=>{
             alignItems: 'center',
             flexDirection: 'column',
           }}
+          onClick={handlebill}
         > 
         <img src={bill} style={{width:'60%', height:'60%'}}/>
         <Typography sx={{ color: "#555555", alignSelf: "center", fontSize: 20 , fontWeight:600  }}>BILLING SYSTEM</Typography>
