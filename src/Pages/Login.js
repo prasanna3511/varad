@@ -20,6 +20,8 @@ export default function Login() {
 
   const handleSubmit = async () => {
     console.log(data)
+    // navigate('/dashboard')
+
 
     try {
 
