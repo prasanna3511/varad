@@ -128,7 +128,7 @@ const ProductTable = () => {
 
     let dataForRequest = {
       invoiceDate: (new Date()).toISOString().split('T')[0],
-      retailerId: retailerRowData.id,
+      retailerId: retailerRowData.retailer_id,
       products: rows
     }
 
