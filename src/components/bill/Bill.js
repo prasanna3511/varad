@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -11,9 +11,11 @@ import {
   Typography,
   Box,
   TextField,
+  Autocomplete,
 } from "@mui/material";
 import html2pdf from "html2pdf.js";
 import Navbar from "../Navbar";
+import axios from "axios";
 
 const ProductTable = () => {
   const [rows, setRows] = useState([]);
@@ -23,17 +25,130 @@ const ProductTable = () => {
   const [quantity, setquantity] = useState("");
   const [size, setsize] = useState("");
 
+  const [dropDown, setDropDown] = useState([]);
+  const [retailers, setRetailers] = useState([]);
+
+  const [product, setProduct] = useState({});
+
+  const [rowData, setRowData] = useState({});
+
+  const [data, setData] = useState({});
+
+  const handleDataChange = (key, value) => {
+    setData((prevData) => {
+      return {
+        ...prevData,
+        [key]: value
+      }
+    })
+  }
+
+  const [retailerRowData, setRetailerRowData] = useState({});
+
+  const setProductData = (product) => {
+    setRowData(product);
+  }
+
+  const setRetailerData = (retailer) => {
+    setRetailerRowData(retailer);
+    console.log(retailer);
+  }
+
+  const [productDataArray, setProductDataArray] = useState([]);
+
+  // Get all products
+  useEffect(() => {
+
+    async function fetchData() {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/getproducts`);
+
+        if (response.data.status) {
+          console.log(response.data.data);
+          setDropDown(response.data.data);
+        }
+
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    fetchData();
+
+  }, [])
+
+  // Get all retailers
+  useEffect(() => {
+
+    async function fetchData() {
+
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/getretailers`)
+        if (response.data.status) {
+          console.log(response.data.data)
+          setRetailers(response.data.data)
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }
+
+    fetchData();
+
+  }, [])
+
   const handleAddRow = () => {
-    const newRow = { productName, quantity, size };
-    setRows([...rows, newRow]);
-    setProductName("");
-    setquantity("");
-    setsize("");
+
+    console.log(data.rate_per_unit)
+
+    let rate_per_unit = parseFloat((parseInt(data.rate_per_unit) / (parseInt(rowData.gst) / 100 + 1)).toFixed(2));
+    let tax_amount = parseFloat(rate_per_unit * parseInt(data.quantity));
+    let cgst = parseFloat(((parseInt(data.rate_per_unit) - rate_per_unit) / 2).toFixed(2));
+    let sgst = parseFloat(((parseInt(data.rate_per_unit) - rate_per_unit) / 2).toFixed(2));
+    let total = (tax_amount + cgst + sgst).toFixed(2);
+
+    // if(parseInt((data.rate_per_unit).split('.')[1]) > 0.5){
+    //   rate_per_unit = Math.ceil(rate_per_unit);
+    // }else{
+    //   rate_per_unit = Math.floor(rate_per_unit);
+    // }
+
+    let temp = { ...rowData, qty: data.quantity, rate_per_unit, tax_amount, cgst, sgst, total };
+
+    setRows([...rows, temp]);
+
   };
 
+  // useState(()=>{
+
+  // }, [rowData])
+
   const handleDownloadPDF = () => {
+
+
+    let dataForRequest = {
+      invoiceDate: (new Date()).toISOString().split('T')[0],
+      retailerId: retailerRowData.retailer_id,
+      products: rows
+    }
+
+    console.log(dataForRequest);
+
+
+    try{
+
+      const response = axios.post(`${process.env.REACT_APP_API_URL}/createinvoice`, dataForRequest);
+
+      console.log(response.data);
+
+
+    }catch(e){
+      console.log(e);
+    }
+
+
     const element = tableRef.current.cloneNode(true);
-    const rows = element.querySelectorAll("tr");
+    // const rows = element.querySelectorAll("tr");
 
     const companyName = "Bhide Works";
     const companyAddress = "Abhaynagr sangali";
@@ -140,21 +255,45 @@ const ProductTable = () => {
             <TableHead>
               <TableRow>
                 <TableCell>Product Name</TableCell>
-                <TableCell>Quantity</TableCell>
-                <TableCell>GST Number</TableCell>
+                <TableCell>HSN Code</TableCell>
+                <TableCell>GST</TableCell>
+                <TableCell>QTY Nos</TableCell>
+                <TableCell>Rate per Unit</TableCell>
+                <TableCell>Taxable Amount</TableCell>
+                <TableCell>CGST</TableCell>
+                <TableCell>SGST</TableCell>
+                <TableCell>Total</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {rows.map((row, index) => (
                 <TableRow key={index}>
                   <TableCell>
-                    <Typography>{row.productName}</Typography>
+                    <Typography>{row.name}</Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography>{row.quantity}</Typography>
+                    <Typography>{row.hsn}</Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography>{row.size}</Typography>
+                    <Typography>{row.gst}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography>{row.qty}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography>{row.rate_per_unit}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography>{row.tax_amount}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography>{row.cgst}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography>{row.sgst}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography>{row.total}</Typography>
                   </TableCell>
                 </TableRow>
               ))}
@@ -171,23 +310,44 @@ const ProductTable = () => {
             justifyContent: "space-evenly",
           }}
         >
-          <TextField
-            placeholder="Product Name"
-            size="small"
-            value={productName}
-            onChange={(e) => setProductName(e.target.value)}
+          <Autocomplete
+            disablePortal
+            id="combo-box-demo"
+            options={retailers.map((option) => option.name)}
+            sx={{ width: 300 }}
+            value={data.retailer_name}
+            onChange={(e) => {
+              handleDataChange("retailer_name", e.target.innerText)
+              setRetailerData(retailers.find((option) => option.name === e.target.innerText))
+            }}
+            renderInput={(params) => <TextField {...params} label="Retailer" />}
+          />
+
+          <Autocomplete
+            disablePortal
+            id="combo-box-demo"
+            options={dropDown.map((option) => option.name)}
+            sx={{ width: 300 }}
+            value={data.name}
+            onChange={(e) => {
+              handleDataChange("name", e.target.innerText)
+              setProductData(dropDown.find((option) => option.name === e.target.innerText))
+            }}
+            renderInput={(params) => <TextField {...params} label="Product" />}
           />
           <TextField
             placeholder="Quantity"
             size="small"
-            value={quantity}
-            onChange={(e) => setquantity(e.target.value)}
+            sx={{ width: 300 }}
+            value={data.quantity}
+            onChange={(e) => handleDataChange("quantity", e.target.value)}
           />
           <TextField
-            placeholder="GST Number"
+            placeholder="Price"
             size="small"
-            value={size}
-            onChange={(e) => setsize(e.target.value)}
+            sx={{ width: 300 }}
+            value={data.rate_per_unit}
+            onChange={(e) => handleDataChange("rate_per_unit", e.target.value)}
           />
           <Button variant="contained" onClick={handleAddRow}>
             Add Product
@@ -213,7 +373,7 @@ const ProductTable = () => {
             width: "90%",
             display: "flex",
             flexDirection: "row",
-            boxShadow:2
+            boxShadow: 2
           }}
         >
           <Box
@@ -223,9 +383,9 @@ const ProductTable = () => {
               border: 1,
               display: "flex",
               flexDirection: "row",
-              borderColor:'grey'
-            //   borderBottom: 1,
-            //   borderRight:1
+              borderColor: 'grey'
+              //   borderBottom: 1,
+              //   borderRight:1
             }}
           >
             <Box sx={{ width: "50%", height: "100%", borderRight: 1 }}>
@@ -278,7 +438,7 @@ const ProductTable = () => {
                   alignItems: "center",
                 }}
               >
-                <Typography>Txable Amount</Typography>
+                <Typography>Taxable Amount</Typography>
               </Box>
               <Box
                 sx={{
@@ -314,7 +474,7 @@ const ProductTable = () => {
               height: "100%",
               borderBottom: 1,
               borderTop: 1,
-              borderRight:1,
+              borderRight: 1,
               display: "flex",
               flexDirection: "row",
             }}
@@ -353,15 +513,15 @@ const ProductTable = () => {
                   flexDirection: "row",
                 }}
               >
-               <Box sx={{width:'50%' , height:'100%' , borderRight:1,display:'flex' , flexDirection:'column' }} >
-               {['14%', '15%'].map((item) => (
-                  <Typography sx={{ fontSize: 15, m: 0.5 }}>{item}</Typography>
-                ))}
-               </Box>
-               <Box sx={{width:'50%' , height:'100%',display:'flex' , flexDirection:'column', alignItems:'flex-end', overflowY:'scroll'}} >
-               {[500, 1000,500, 1000,500, 1000,500, 1000,].map((item) => (
-                  <Typography sx={{ fontSize: 15,m: 0.5}}>{item}</Typography>
-                ))}
+                <Box sx={{ width: '50%', height: '100%', borderRight: 1, display: 'flex', flexDirection: 'column' }} >
+                  {['14%', '15%'].map((item) => (
+                    <Typography sx={{ fontSize: 15, m: 0.5 }}>{item}</Typography>
+                  ))}
+                </Box>
+                <Box sx={{ width: '50%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', overflowY: 'scroll' }} >
+                  {[500, 1000, 500, 1000, 500, 1000, 500, 1000,].map((item) => (
+                    <Typography sx={{ fontSize: 15, m: 0.5 }}>{item}</Typography>
+                  ))}
                 </Box>
               </Box>
               <Box
@@ -374,12 +534,12 @@ const ProductTable = () => {
                   borderTop: 1,
                 }}
               >
-                <Typography sx={{mx:1}} >1500</Typography>
+                <Typography sx={{ mx: 1 }} >1500</Typography>
               </Box>
             </Box>
             {/* CGST */}
             <Box sx={{ width: "33.3%", height: "100%", borderRight: 1 }}>
-            <Box
+              <Box
                 sx={{
                   width: "100%",
                   height: "20%",
@@ -411,15 +571,15 @@ const ProductTable = () => {
                   flexDirection: "row",
                 }}
               >
-               <Box sx={{width:'50%' , height:'100%' , borderRight:1,display:'flex' , flexDirection:'column' }} >
-               {['14%', '15%'].map((item) => (
-                  <Typography sx={{ fontSize: 15, m: 0.5 }}>{item}</Typography>
-                ))}
-               </Box>
-               <Box sx={{width:'50%' , height:'100%',display:'flex' , flexDirection:'column', alignItems:'flex-end', overflowY:'scroll'}} >
-               {[500, 1000,500, 1000,500, 1000,500, 1000,].map((item) => (
-                  <Typography sx={{ fontSize: 15,m: 0.5}}>{item}</Typography>
-                ))}
+                <Box sx={{ width: '50%', height: '100%', borderRight: 1, display: 'flex', flexDirection: 'column' }} >
+                  {['14%', '15%'].map((item) => (
+                    <Typography sx={{ fontSize: 15, m: 0.5 }}>{item}</Typography>
+                  ))}
+                </Box>
+                <Box sx={{ width: '50%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', overflowY: 'scroll' }} >
+                  {[500, 1000, 500, 1000, 500, 1000, 500, 1000,].map((item) => (
+                    <Typography sx={{ fontSize: 15, m: 0.5 }}>{item}</Typography>
+                  ))}
                 </Box>
               </Box>
               <Box
@@ -432,12 +592,12 @@ const ProductTable = () => {
                   borderTop: 1,
                 }}
               >
-                <Typography sx={{mx:1}} >1500</Typography>
+                <Typography sx={{ mx: 1 }} >1500</Typography>
               </Box>
             </Box>
             {/* Totalamount */}
-            <Box sx={{ width: "33.3%", height: "100%",  }}>
-            <Box
+            <Box sx={{ width: "33.3%", height: "100%", }}>
+              <Box
                 sx={{
                   width: "100%",
                   height: "20%",
@@ -448,7 +608,7 @@ const ProductTable = () => {
                 }}
               >
                 <Typography sx={{ fontSize: 14 }}>Total Taxable Amount</Typography>
-                
+
               </Box>
               <Box
                 sx={{
@@ -458,11 +618,11 @@ const ProductTable = () => {
                   flexDirection: "row",
                 }}
               >
-             
-               <Box sx={{width:'100%' , height:'100%',display:'flex' , flexDirection:'column', alignItems:'flex-end', overflowY:'scroll'}} >
-               {[500, 1000,500, 1000,500, 1000,500, 1000,].map((item) => (
-                  <Typography sx={{ fontSize: 15,m: 0.5}}>{item}</Typography>
-                ))}
+
+                <Box sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', overflowY: 'scroll' }} >
+                  {[500, 1000, 500, 1000, 500, 1000, 500, 1000,].map((item) => (
+                    <Typography sx={{ fontSize: 15, m: 0.5 }}>{item}</Typography>
+                  ))}
                 </Box>
               </Box>
               <Box
@@ -475,7 +635,7 @@ const ProductTable = () => {
                   borderTop: 1,
                 }}
               >
-                <Typography sx={{mx:1}} >1500</Typography>
+                <Typography sx={{ mx: 1 }} >1500</Typography>
               </Box>
             </Box>
           </Box>

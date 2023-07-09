@@ -139,10 +139,126 @@ const handlebill=()=>{
             <img src={retail} style={{ width: "80%", height: "80%" }} />
           </Box>
         </Box>
+
+        
       </Box>
       {/* box 1 */}
       {/* box 2 */}
+
       <Box
+        sx={{
+          width: "40%",
+          height: "100%",
+          display: "flex",
+          justifyContent: "space-evenly",
+          flexDirection: "column",
+          alignItems: "center",
+          minWidth: 500,
+          ml: 1,
+        }}
+      >
+        <Box
+          sx={{
+            width: "90%",
+            height: "39%",
+            backgroundColor: "#FF6B35",
+            borderRadius: 3,
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            // mr: -2,
+          }}
+          onClick={handlebill}
+        >
+          <Box
+            sx={{
+              width: "40%",
+              height: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "column",
+            }}
+          >
+            <Typography
+              sx={{ color: "white", alignSelf: "center", fontSize: 20 , fontWeight:600}}
+            >
+              BILLING
+            </Typography>
+            <Typography
+              sx={{ color: "white", alignSelf: "center", fontSize: 20 , fontWeight:600}}
+            >
+              SYSTEM
+            </Typography>
+          </Box>
+          <Box
+            sx={{
+              width: "60%",
+              height: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <img src={inventory} style={{ width: "80%", height: "80%" }} />
+          </Box>
+        </Box>
+
+
+        <Box
+          sx={{
+            width: "90%",
+            height: "39%",
+            backgroundColor: "#FF6B35",
+            borderRadius: 3,
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            // mr: -2,
+          }}
+          onClick={handleretail}
+
+        >
+          <Box
+            sx={{
+              width: "40%",
+              height: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "column",
+            }}
+          >
+            <Typography
+              sx={{ color: "white", alignSelf: "center", fontSize: 20, fontWeight:600 }}
+            >
+              BILL
+            </Typography>
+            <Typography
+              sx={{ color: "white", alignSelf: "center", fontSize: 20 , fontWeight:600 }}
+            >
+              BOOK
+            </Typography>
+          </Box>
+          <Box
+            sx={{
+              width: "60%",
+              height: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <img src={retail} style={{ width: "80%", height: "80%" }} />
+          </Box>
+        </Box>
+
+        
+      </Box>
+
+      {/* <Box
         sx={{
           width: "40%",
           height: "100%",
@@ -167,7 +283,7 @@ const handlebill=()=>{
         <img src={bill} style={{width:'60%', height:'60%'}}/>
         <Typography sx={{ color: "#555555", alignSelf: "center", fontSize: 20 , fontWeight:600  }}>BILLING SYSTEM</Typography>
          </Box>
-      </Box>
+      </Box> */}
       {/* box 2 */}
     </Box>
   );
