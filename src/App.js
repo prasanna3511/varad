@@ -5,6 +5,7 @@ import Dashboard from './Pages/Dashboard/Dashboard';
 import Inventory from './Pages/Management/Inventory';
 import Retail from './Pages/Management/Retail';
 import Bill from '../src/components/bill/Bill'
+import Stockist from './Pages/Management/Stockist'
 
 function App() {
   return (
@@ -15,6 +16,8 @@ function App() {
     <Route path="/inventory" element={  <Inventory/>} />
     <Route path="/retail" element={  <Retail/>} />
     <Route path="/bill" element={  <Bill/>} />
+    <Route path="/stockist" element={  <Stockist/>} />
+
 
     </Routes>
     </BrowserRouter>
