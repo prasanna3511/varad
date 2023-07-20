@@ -149,12 +149,12 @@ export default function AlertDialogSlide(props) {
             </Box>
             <Box sx={{ width: '80%', display: "flex", justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }} >
               <Box sx={{ width: '90%' }} >
-                <Typography sx={{ my: 0.5, }} >GST Number</Typography>
+                <Typography sx={{ my: 0.5, }} >GST</Typography>
               </Box>
               <TextField
                 //   fullWidth
                 size="small"
-                placeholder="GST Number"
+                placeholder="GST"
                 value={data.gst}
                 onChange={(e) => {
                   handleChange("gst", e.target.value);

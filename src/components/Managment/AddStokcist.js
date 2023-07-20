@@ -58,13 +58,13 @@ export default function AlertDialogSlide(props) {
       [key]: value,
     });
   };
-  React.useEffect(() => {
-    if (props.update === 'update') {
-      console.log("updated data", props.row);
-      setData(props.row);
-    //   updateProduct();
-    }
-  }, [props.update, props.row]);
+//   React.useEffect(() => {
+//     if (props.update === 'update') {
+//       console.log("updated data", props.row);
+//       setData(props.row);
+//     //   updateProduct();
+//     }
+//   }, [props.update, props.row]);
   const updateProduct = async () => {
     try {
       const response = await axios.post(`${process.env.REACT_APP_API_URL}/updateStockist`, data,
@@ -99,7 +99,7 @@ export default function AlertDialogSlide(props) {
           <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }} >
             <Box sx={{ width: '80%', display: "flex", justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }} >
               <Box sx={{ width: '90%' }} >
-                <Typography sx={{ my: 0.5, }} >Product Name</Typography>
+                <Typography sx={{ my: 0.5, }} >Name</Typography>
 
               </Box>
               <TextField
@@ -115,7 +115,7 @@ export default function AlertDialogSlide(props) {
             </Box>
             <Box sx={{ width: '80%', display: "flex", justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }} >
               <Box sx={{ width: '90%' }} >
-                <Typography sx={{ my: 0.5, }} >Quantity</Typography>
+                <Typography sx={{ my: 0.5, }} >Address</Typography>
               </Box>
               <TextField
                 //   fullWidth
@@ -160,12 +160,12 @@ export default function AlertDialogSlide(props) {
             </Box> */}
             <Box sx={{ width: '80%', display: "flex", justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }} >
               <Box sx={{ width: '90%' }} >
-                <Typography sx={{ my: 0.5, }} >HSN Number</Typography>
+                <Typography sx={{ my: 0.5, }} >Gst Number</Typography>
               </Box>
               <TextField
                 //   fullWidth
                 size="small"
-                placeholder="HSN Number"
+                placeholder="Gst Number"
                 value={data.gst_number}
                 onChange={(e) => {
                   handleChange("gst_number", e.target.value);

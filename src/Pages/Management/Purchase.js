@@ -14,7 +14,7 @@ import {
   Autocomplete,
 } from "@mui/material";
 import html2pdf from "html2pdf.js";
-import Navbar from "../Navbar";
+import Navbar from "../../components/Navbar";
 import axios from "axios";
 
 const ProductTable = () => {
@@ -79,7 +79,9 @@ const ProductTable = () => {
 
   // Get all retailers
   useEffect(() => {
+
     async function fetchData() {
+
       try {
         const response = await axios.get(`${process.env.REACT_APP_API_URL}/getretailers`)
         if (response.data.status) {
@@ -96,7 +98,7 @@ const ProductTable = () => {
   }, [])
 
   const [bname ,setBname] = useState([])
-  const handleAddRow = () => {
+  const handleAddRow = async () => {
 
     console.log(data.rate_per_unit)
 
@@ -105,9 +107,36 @@ const ProductTable = () => {
     let cgst = parseFloat(((parseInt(data.rate_per_unit) - rate_per_unit) / 2).toFixed(2));
     let sgst = parseFloat(((parseInt(data.rate_per_unit) - rate_per_unit) / 2).toFixed(2));
     let total = (tax_amount + cgst + sgst).toFixed(2);
+
+    // if(parseInt((data.rate_per_unit).split('.')[1]) > 0.5){
+    //   rate_per_unit = Math.ceil(rate_per_unit);
+    // }else{
+    //   rate_per_unit = Math.floor(rate_per_unit);
+    // }
+
     let temp = { ...rowData, qty: data.quantity, rate_per_unit, tax_amount, cgst, sgst, total };
+
     setRows([...rows, temp]);
     console.log("rows are",rowData)
+    // api
+    try {
+        const response = await axios.post(`${process.env.REACT_APP_API_URL}/makepurchase`, rowData,
+         
+        {
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          }
+        )
+        console.log(response.data)
+        if(response.data.status){
+          window.location.reload()
+          // handleClose()
+        }
+      } catch (e) {
+        console.log(e)
+      }
+      //api
     setBname([...bname , rowData])
 console.log("data to print",bname)
   };
@@ -161,86 +190,6 @@ console.log("data to print",bname)
     headerDiv.style.flexDirection = "column";
     // headerDiv.style.alignItems = "center";
     // headerDiv.style.justifyContent = "center";
-    
-    // this code for new box
-    const additionalContentDiv = document.createElement("div");
-    additionalContentDiv.style.width = '100%';
-    additionalContentDiv.style.display = "flex";
-    additionalContentDiv.style.flexDirection = "row";
-    additionalContentDiv.style.justifyContent = "space-between";
-    additionalContentDiv.style.marginTop = "20px";
-  
-    // HSN code
-    const hsnDiv = document.createElement("div");
-    hsnDiv.style.width = "20%";
-    hsnDiv.style.border = "1px solid black";
-
-    const hsnTitle = document.createElement("div");
-    hsnTitle.textContent = "HSN Code";
-    hsnDiv.appendChild(hsnTitle);
-    rows.forEach((item) => {
-      const hsnItem = document.createElement("div");
-      hsnItem.textContent = item.hsn;
-      hsnDiv.appendChild(hsnItem);
-    });
-    additionalContentDiv.appendChild(hsnDiv);
-  
-    // Taxable amount
-    const taxableAmountDiv = document.createElement("div");
-    taxableAmountDiv.style.width = "20%";
-    const taxableAmountTitle = document.createElement("div");
-    taxableAmountTitle.textContent = "Taxable Amount";
-    taxableAmountDiv.appendChild(taxableAmountTitle);
-    rows.forEach((item) => {
-      const taxableAmountItem = document.createElement("div");
-      const formattedTaxableAmount = item.tax_amount.toFixed(3);
-
-      taxableAmountItem.textContent = formattedTaxableAmount;
-      taxableAmountDiv.appendChild(taxableAmountItem);
-    });
-    additionalContentDiv.appendChild(taxableAmountDiv);
-  
-    // SGST
-    const sgstDiv = document.createElement("div");
-    sgstDiv.style.width = "20%";
-    const sgstTitle = document.createElement("div");
-    sgstTitle.textContent = "SGST";
-    sgstDiv.appendChild(sgstTitle);
-    rows.forEach((item) => {
-      const sgstItem = document.createElement("div");
-      sgstItem.textContent = item.sgst;
-      sgstDiv.appendChild(sgstItem);
-    });
-    additionalContentDiv.appendChild(sgstDiv);
-  
-    // CGST
-    const cgstDiv = document.createElement("div");
-    cgstDiv.style.width = "20%";
-    const cgstTitle = document.createElement("div");
-    cgstTitle.textContent = "CGST";
-    cgstDiv.appendChild(cgstTitle);
-    rows.forEach((item) => {
-      const cgstItem = document.createElement("div");
-      cgstItem.textContent = item.cgst;
-      cgstDiv.appendChild(cgstItem);
-    });
-    additionalContentDiv.appendChild(cgstDiv);
-  
-    // Total taxable amount
-    const totalTaxableAmountDiv = document.createElement("div");
-    totalTaxableAmountDiv.style.width = "20%";
-    const totalTaxableAmountTitle = document.createElement("div");
-    totalTaxableAmountTitle.textContent = "Total Taxable Amount";
-    totalTaxableAmountDiv.appendChild(totalTaxableAmountTitle);
-    rows.forEach((item) => {
-      const totalTaxableAmountItem = document.createElement("div");
-      totalTaxableAmountItem.textContent = item.total;
-      totalTaxableAmountDiv.appendChild(totalTaxableAmountItem);
-    });
-    additionalContentDiv.appendChild(totalTaxableAmountDiv);
-  
-    contentDiv.appendChild(additionalContentDiv);
-    //new box code ends here
 
 
     const companyNameElement = document.createElement("div");
@@ -284,7 +233,6 @@ console.log("data to print",bname)
 
     contentDiv.appendChild(headerDiv);
     contentDiv.appendChild(tableDiv);
-    contentDiv.appendChild(additionalContentDiv);
     contentDiv.appendChild(footerDiv);
 
     const opt = {
@@ -295,7 +243,7 @@ console.log("data to print",bname)
       jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
     };
 
-    html2pdf().set(opt).from(contentDiv).save();  
+    html2pdf().set(opt).from(contentDiv).save();
   };
   const taxamnt = rows.reduce((accumulator, item) => accumulator + item.tax_amount, 0);
   const cgsttotal = rows.reduce((accumulator, item) => accumulator + item.cgst, 0);
@@ -316,7 +264,7 @@ console.log("data to print",bname)
       }}
     >
       <Box sx={{ width: "100%" }}>
-        <Navbar name={" Billing"} />
+        <Navbar name={"Purchase"} />
       </Box>
       <Box
         sx={{
@@ -342,13 +290,13 @@ console.log("data to print",bname)
             <TableHead>
               <TableRow>
                 <TableCell>Product Name</TableCell>
-                <TableCell>HSN Code</TableCell>
-                <TableCell>GST</TableCell>
+                {/* <TableCell>HSN Code</TableCell> */}
+                {/* <TableCell>GST</TableCell> */}
                 <TableCell>QTY Nos</TableCell>
-                <TableCell>Rate per Unit</TableCell>
+                {/* <TableCell>Rate per Unit</TableCell>
                 <TableCell>Taxable Amount</TableCell>
                 <TableCell>CGST</TableCell>
-                <TableCell>SGST</TableCell>
+                <TableCell>SGST</TableCell> */}
                 <TableCell>Total</TableCell>
               </TableRow>
             </TableHead>
@@ -358,16 +306,16 @@ console.log("data to print",bname)
                   <TableCell>
                     <Typography>{row.name}</Typography>
                   </TableCell>
-                  <TableCell>
+                  {/* <TableCell>
                     <Typography>{row.hsn}</Typography>
                   </TableCell>
                   <TableCell>
                     <Typography>{row.gst}</Typography>
-                  </TableCell>
+                  </TableCell> */}
                   <TableCell>
                     <Typography>{row.qty}</Typography>
                   </TableCell>
-                  <TableCell>
+                  {/* <TableCell>
                     <Typography>{row.rate_per_unit}</Typography>
                   </TableCell>
                   <TableCell>
@@ -378,7 +326,7 @@ console.log("data to print",bname)
                   </TableCell>
                   <TableCell>
                     <Typography>{row.sgst}</Typography>
-                  </TableCell>
+                  </TableCell> */}
                   <TableCell>
                     <Typography>{row.total}</Typography>
                   </TableCell>
@@ -439,22 +387,22 @@ console.log("data to print",bname)
           <Button variant="contained" onClick={handleAddRow}>
             Add Product
           </Button>
-          <Button variant="contained" onClick={handleDownloadPDF}>
+          {/* <Button variant="contained" onClick={handleDownloadPDF}>
             Generate Bill
-          </Button>
+          </Button> */}
         </Box>
       </Box>
-      <Box
+      {/* <Box
         sx={{
           width: "100%",
-          height: '100%',
+          height: 200,
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
           // overflowY:'auto',
         }}
       >
-        {/* take code from here  */}
+   
         <Box
           sx={{
             height: "100%",
@@ -480,12 +428,11 @@ console.log("data to print",bname)
               <Box
                 sx={{
                   width: "100%",
-                  height: 43,
+                  height: "20%",
                   borderBottom: 1,
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  mb:1
                 }}
               >
                 <Typography>HSN Code</Typography>
@@ -500,7 +447,7 @@ console.log("data to print",bname)
                 }}
               >
                 {bname.map((item) => (
-                  <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.hsn}</Typography>
+                  <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.name}</Typography>
                 ))}
               </Box>
               <Box
@@ -511,23 +458,21 @@ console.log("data to print",bname)
                   justifyContent: "center",
                   alignItems: "center",
                   borderTop: 1,
-                  mt:2,
                 }}
               >
                 <Typography>Total Amount</Typography>
               </Box>
             </Box>
-            {/* taxable amount */}
+           
             <Box sx={{ width: "50%", height: "100%" }}>
               <Box
                 sx={{
                   width: "100%",
-                  height: 43,
+                  height: "20%",
                   borderBottom: 1,
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  mb:1
                 }}
               >
                 <Typography>Taxable Amount</Typography>
@@ -556,7 +501,6 @@ console.log("data to print",bname)
                   justifyContent: "center",
                   alignItems: "center",
                   borderTop: 1,
-                  mt:2
                 }}
               >
                 <Typography>{taxamnt}</Typography>
@@ -567,14 +511,13 @@ console.log("data to print",bname)
             sx={{
               width: "55%",
               height: "100%",
-              // borderBottom: 1,
+              borderBottom: 1,
               borderTop: 1,
               borderRight: 1,
               display: "flex",
               flexDirection: "row",
             }}
           >
-            {/* GST */}
             <Box sx={{ width: "33.3%", height: "100%", borderRight: 1 }}>
               <Box
                 sx={{
@@ -584,10 +527,9 @@ console.log("data to print",bname)
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                  mb:1
                 }}
               >
-                <Typography sx={{ fontSize: 14 }}>CGst</Typography>
+                <Typography sx={{ fontSize: 14 }}>Gst</Typography>
                 <Box
                   sx={{
                     width: "100%",
@@ -595,7 +537,6 @@ console.log("data to print",bname)
                     display: "flex",
                     justifyContent: "space-around",
                     borderTop: 1,
-                   
                   }}
                 >
                   <Typography sx={{ fontSize: 14 }}>Rate</Typography>
@@ -611,11 +552,11 @@ console.log("data to print",bname)
                 }}
               >
                 <Box sx={{ width: '50%', height: '100%', borderRight: 1, display: 'flex', flexDirection: 'column' }} >
-                  {/* {['14%'].map((item) => (
+                  {['14%', '15%'].map((item) => (
                     <Typography sx={{ fontSize: 15, m: 0.5 }}>{item}</Typography>
-                  ))} */}
+                  ))}
                 </Box>
-                <Box sx={{ width: '50%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', }} >
+                <Box sx={{ width: '50%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', overflowY: 'scroll' }} >
                   {rows.map((item) => (
                     <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.cgst}</Typography>
                   ))}
@@ -628,15 +569,12 @@ console.log("data to print",bname)
                   display: "flex",
                   justifyContent: "flex-end",
                   alignItems: "center",
-                  borderBottom: 1,
                   borderTop: 1,
-                  mt:2
                 }}
               >
                 <Typography sx={{ mx: 1 }} >{cgsttotal}</Typography>
               </Box>
             </Box>
-            {/* CGST */}
             <Box sx={{ width: "33.3%", height: "100%", borderRight: 1 }}>
               <Box
                 sx={{
@@ -646,7 +584,6 @@ console.log("data to print",bname)
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                  mb:1
                 }}
               >
                 <Typography sx={{ fontSize: 14 }}>Sgst</Typography>
@@ -672,13 +609,13 @@ console.log("data to print",bname)
                 }}
               >
                 <Box sx={{ width: '50%', height: '100%', borderRight: 1, display: 'flex', flexDirection: 'column' }} >
-                  {rows.map((item) => (
-                    <Typography sx={{ fontSize: 15, m: 0.5 }}></Typography>
+                  {['14%', '15%'].map((item) => (
+                    <Typography sx={{ fontSize: 15, m: 0.5 }}>{item}</Typography>
                   ))}
                 </Box>
                 <Box sx={{ width: '50%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', overflowY: 'auto' }} >
                 {rows.map((item) => (
-                    <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.sgst}</Typography>
+                    <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.cgst}</Typography>
                   ))}
                 </Box>
               </Box>
@@ -690,24 +627,20 @@ console.log("data to print",bname)
                   justifyContent: "flex-end",
                   alignItems: "center",
                   borderTop: 1,
-                  borderBottom: 1,
-                  mt:2
                 }}
               >
                 <Typography sx={{ mx: 1 }} >{sgsttotal}</Typography>
               </Box>
             </Box>
-            {/* Totalamount */}
             <Box sx={{ width: "33.3%", height: "100%", }}>
               <Box
                 sx={{
                   width: "100%",
-                  height: 43,
+                  height: "20%",
                   borderBottom: 1,
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                  mb:1
                 }}
               >
                 <Typography sx={{ fontSize: 14 }}>Total Taxable Amount</Typography>
@@ -725,7 +658,7 @@ console.log("data to print",bname)
                 <Box sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', overflowY: 'scroll' }} >
                 {rows.map((item) => (
                     <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.total}</Typography>
-                  ))} 
+                  ))}
                 </Box>
               </Box>
               <Box
@@ -736,8 +669,6 @@ console.log("data to print",bname)
                   justifyContent: "flex-end",
                   alignItems: "center",
                   borderTop: 1,
-                  borderBottom: 1,
-                  mt:2
                 }}
               >
                 <Typography sx={{ mx: 1 }} >{totalamnt}</Typography>
@@ -745,7 +676,7 @@ console.log("data to print",bname)
             </Box>
           </Box>
         </Box>
-      </Box>
+      </Box> */}
       {/* take code till here  */}
     </Box>
   );

@@ -21,6 +21,9 @@ const handlebill=()=>{
 const handleStockist=()=>{
   navigate('/stockist')
 }
+const handlepurchase =()=>{
+  navigate('/purchase')
+}
   return (
     <Box
       sx={{
@@ -49,7 +52,7 @@ const handleStockist=()=>{
         <Box
           sx={{
             width: "90%",
-            height: "39%",
+            height: "29%",
             backgroundColor: "#FF6B35",
             borderRadius: 3,
             display: "flex",
@@ -96,7 +99,7 @@ const handleStockist=()=>{
         <Box
           sx={{
             width: "90%",
-            height: "39%",
+            height: "29%",
             backgroundColor: "#FF6B35",
             borderRadius: 3,
             display: "flex",
@@ -141,6 +144,56 @@ const handleStockist=()=>{
             <img src={retail} style={{ width: "80%", height: "80%" }} />
           </Box>
         </Box>
+        {/* third one */}
+        <Box
+          sx={{
+            width: "90%",
+            height: "29%",
+            backgroundColor: "#FF6B35",
+            borderRadius: 3,
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            // mr: -2,
+          }}
+          onClick={handlepurchase}
+
+        >
+          <Box
+            sx={{
+              width: "40%",
+              height: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "column",
+            }}
+          >
+            <Typography
+              sx={{ color: "white", alignSelf: "center", fontSize: 20, fontWeight:600 }}
+            >
+              PURCHASE
+            </Typography>
+            <Typography
+              sx={{ color: "white", alignSelf: "center", fontSize: 20 , fontWeight:600 }}
+            >
+              MANAGEMENT
+            </Typography>
+          </Box>
+          <Box
+            sx={{
+              width: "60%",
+              height: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <img src={retail} style={{ width: "80%", height: "80%" }} />
+          </Box>
+        </Box>
+
 
         
       </Box>
