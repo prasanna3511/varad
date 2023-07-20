@@ -53,7 +53,7 @@ function EditToolbar(props) {
 }
 
 export default function FullFeaturedCrudGrid() {
-  const [ data, setData] = useState([]);
+  const [data, setData] = useState([]);
   const [rowModesModel, setRowModesModel] = useState({});
   const [open, setOpen] = useState(false)
   const [forUpdate, setForUpdate] = useState(false)
@@ -110,7 +110,7 @@ export default function FullFeaturedCrudGrid() {
             sx={{}}
             onClick={() => {
               handleRowClick(params.row)
-            }}>{params.row.id}</Typography>
+            }}>{params.row.retailer_id}</Typography>
         </>
       },
     },
@@ -247,14 +247,13 @@ export default function FullFeaturedCrudGrid() {
             columns={columns}
             editMode="row"
             rowModesModel={rowModesModel}
+            getRowId={(row) => row.retailer_id}
             // onRowModesModelChange={handleRowModesModelChange}
             // onRowEditStop={handleRowEditStop}
             // processRowUpdate={processRowUpdate}
             slots={{
               toolbar: EditToolbar,
             }}
-getRowId={(row)=>row.retailer_id}
-
             sx={
               {
                 '& .element.style': {
