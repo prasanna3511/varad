@@ -20,11 +20,9 @@ import {
   randomId,
 } from '@mui/x-data-grid-generator';
 import { display } from '@mui/system';
-import AddRetail from '../../components/Managment/AddRetail'
+import AddStokcist from '../../components/Managment/AddStokcist'
 import { Typography } from '@mui/material';
-import { ReportGmailerrorred } from '@mui/icons-material';
 import axios from 'axios';
-
 
 const roles = ['Market', 'Finance', 'Development'];
 const randomRole = () => {
@@ -32,75 +30,64 @@ const randomRole = () => {
   return roles[randomIndex];
 };
 
-
 function EditToolbar(props) {
   const { setRows, setRowModesModel } = props;
 
-  const [open, setOpen] = React.useState(false)
-  const handleClick = () => {
-    setOpen(!open)
-  };
+  const [open, setOpen] = useState(false)
 
   return (
     <GridToolbarContainer sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }} >
       {/* <Button color="primary" startIcon={<AddIcon />} onClick={handleClick} sx={{border:1 , backgroundColor:'#3457D5' , color:'white', fontSize:12 , mx:2,my:1}} >
         Add Product
       </Button> */}
-      {/* {        open && <AddInventory open={open} setOpen={setOpen}  />} */}
+      {open && <AddStokcist open={open} setOpen={setOpen} />}
 
     </GridToolbarContainer>
   );
 }
 
 export default function FullFeaturedCrudGrid() {
-  const [ data, setData] = useState([]);
-  const [rowModesModel, setRowModesModel] = useState({});
-  const [open, setOpen] = useState(false)
-  const [forUpdate, setForUpdate] = useState(false)
 
-  useEffect(() => {
-
-    async function fetchData() {
-
-      try {
-
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/getretailers`)
-
-        if (response.data.status) {
-          console.log(response.data.data)
-          setData(response.data.data)
-        }
-
-      } catch (e) {
-
-        console.log(e);
-
-      }
-    }
-
-    fetchData();
-
-  }, [])
-
-
-
+  const [rowModesModel, setRowModesModel] = React.useState({});
+  const [open, setOpen] = React.useState(false)
   const handleClick = () => {
     setOpen(!open)
   };
 
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+
+    async function getProducts() {
+      try {
+
+        let response = await axios.get(`${process.env.REACT_APP_API_URL}/getstockist`)
+
+        if (response.data.status) {
+          setData(response.data.data)
+        }
+
+      } catch (err) {
+        console.log(err)
+      }
+    }
+    getProducts()
+  }, [])
+
+  const [uprow , setUpRow] = useState({})
   const handleRowClick = (row) => {
-    console.log(row)
+    console.log("row data is",row)
     setOpen(!open)
-    setForUpdate(true)
+    setUpRow(row)
 
   }
 
   const columns = [
     {
       field: 'id',
-      headerName: 'Retailer Id',
+      headerName: 'Product Id',
       type: 'number',
-      width: 180,
+      width: 240,
       align: 'center',
       headerAlign: 'center',
       editable: true,
@@ -110,14 +97,14 @@ export default function FullFeaturedCrudGrid() {
             sx={{}}
             onClick={() => {
               handleRowClick(params.row)
-            }}>{params.row.retailer_id}</Typography>
+            }}>{params.row.id}</Typography>
         </>
       },
     },
     {
       field: 'name',
-      headerName: 'Retailer Name',
-      width: 180,
+      headerName: 'Product Name',
+      width: 240,
       editable: true,
       align: 'center',
       headerAlign: 'center',
@@ -132,10 +119,10 @@ export default function FullFeaturedCrudGrid() {
       },
     },
     {
-      field: 'mbl_number',
-      headerName: 'Mobile Number',
+      field: 'address',
+      headerName: 'Address',
       //   type: 'date',
-      width: 180,
+      width: 240,
       editable: true,
       align: 'center',
       headerAlign: 'center',
@@ -145,51 +132,16 @@ export default function FullFeaturedCrudGrid() {
             sx={{}}
             onClick={() => {
               handleRowClick(params.row)
-            }}>{params.row.mbl_number}</Typography>
+            }}>{params.row.address}</Typography>
         </>
       },
     },
-    {
-      field: 'email',
-      headerName: 'Email ',
-      //   type: 'number',
-      align: 'center',
-      headerAlign: 'center',
-      width: 220,
-      editable: true,
-      renderCell: (params) => {
-        return <>
-          <Typography
-            sx={{ overflow: 'hidden' }}
-            onClick={() => {
-              handleRowClick(params.row, 'update')
-            }}>{params.row.email}</Typography>
-        </>
-      },
-
-    },
-    {
-      field: 'route_name',
-      headerName: 'Route Name',
-      // type: 'number',
-      width: 180, align: 'center',
-      headerAlign: 'center',
-      editable: true,
-      renderCell: (params) => {
-        return <>
-          <Typography
-            sx={{}}
-            onClick={() => {
-              handleRowClick(params.row)
-            }}>{params.row.route_name}</Typography>
-        </>
-      },
-    },
+   
     {
       field: 'gst_number',
-      headerName: 'GST Number',
+      headerName: 'GST',
       // type: 'number',
-      width: 180, align: 'center',
+      width: 240, align: 'center',
       headerAlign: 'center',
       editable: true,
       renderCell: (params) => {
@@ -201,8 +153,6 @@ export default function FullFeaturedCrudGrid() {
               handleRowClick(params.row)
             }}>{params.row.gst_number}</Typography>
         </>
-
-
       },
     },
 
@@ -232,12 +182,12 @@ export default function FullFeaturedCrudGrid() {
     >
 
       <Box sx={{ width: '100%', height: '100%', }} >
-        <Navbar name={' Retail Management'} />
-        <Box sx={{ width: '80%', height: '100%', mx: '10%' }} >
+        <Navbar name={' Stokist '} />
+        <Box sx={{ width: '60%', height: '100%', mx: '20%' }} >
 
 
           <Box sx={{ width: '100%', display: 'flex', justifyContent: "flex-end" }} >
-            <Button color="primary" startIcon={<AddIcon />} onClick={handleClick} sx={{ border: 1, backgroundColor: '#3457D5', color: 'white', fontSize: 12, mx: 2, my: 1 }} >
+            <Button color="primary" startIcon={<AddIcon />} onClick={handleRowClick} sx={{ border: 1, backgroundColor: '#3457D5', color: 'white', fontSize: 12, mx: 2, my: 1 }} >
               Add Product
             </Button>
           </Box>
@@ -247,15 +197,12 @@ export default function FullFeaturedCrudGrid() {
             columns={columns}
             editMode="row"
             rowModesModel={rowModesModel}
-            getRowId= {(row) => row.retailer_id}
             // onRowModesModelChange={handleRowModesModelChange}
             // onRowEditStop={handleRowEditStop}
             // processRowUpdate={processRowUpdate}
             slots={{
               toolbar: EditToolbar,
             }}
-getRowId={(row)=>row.retailer_id}
-
             sx={
               {
                 '& .element.style': {
@@ -268,7 +215,7 @@ getRowId={(row)=>row.retailer_id}
             }
           />
         </Box>
-        {open && <AddRetail open={open} setOpen={setOpen} update={forUpdate} />}
+        {open && <AddStokcist open={open} setOpen={setOpen} update="update" row={uprow}  />}
 
       </Box>
 

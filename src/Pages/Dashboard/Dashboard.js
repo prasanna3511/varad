@@ -18,12 +18,14 @@ const handlebill=()=>{
   navigate('/bill')
 
 }
+const handleStockist=()=>{
+  navigate('/stockist')
+}
   return (
     <Box
       sx={{
         width: "100%",
         height: "100vh",
-        border: 1,
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -160,7 +162,7 @@ const handlebill=()=>{
         <Box
           sx={{
             width: "90%",
-            height: "39%",
+            height: "29%",
             backgroundColor: "#FF6B35",
             borderRadius: 3,
             display: "flex",
@@ -209,7 +211,7 @@ const handlebill=()=>{
         <Box
           sx={{
             width: "90%",
-            height: "39%",
+            height: "29%",
             backgroundColor: "#FF6B35",
             borderRadius: 3,
             display: "flex",
@@ -254,6 +256,56 @@ const handlebill=()=>{
             <img src={retail} style={{ width: "80%", height: "80%" }} />
           </Box>
         </Box>
+        {/* last box */}
+        <Box
+          sx={{
+            width: "90%",
+            height: "29%",
+            backgroundColor: "#FF6B35",
+            borderRadius: 3,
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            // mr: -2,
+          }}
+          onClick={handleStockist}
+
+        >
+          <Box
+            sx={{
+              width: "40%",
+              height: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "column",
+            }}
+          >
+            <Typography
+              sx={{ color: "white", alignSelf: "center", fontSize: 20, fontWeight:600 }}
+            >
+              Stockist
+            </Typography>
+            <Typography
+              sx={{ color: "white", alignSelf: "center", fontSize: 20 , fontWeight:600 }}
+            >
+              BOOK
+            </Typography>
+          </Box>
+          <Box
+            sx={{
+              width: "60%",
+              height: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <img src={retail} style={{ width: "80%", height: "80%" }} />
+          </Box>
+        </Box>
+
 
         
       </Box>

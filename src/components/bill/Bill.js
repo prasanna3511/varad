@@ -97,6 +97,7 @@ const ProductTable = () => {
 
   }, [])
 
+  const [bname ,setBname] = useState([])
   const handleAddRow = () => {
 
     console.log(data.rate_per_unit)
@@ -116,7 +117,9 @@ const ProductTable = () => {
     let temp = { ...rowData, qty: data.quantity, rate_per_unit, tax_amount, cgst, sgst, total };
 
     setRows([...rows, temp]);
-
+    console.log("rows are",rowData)
+    setBname([...bname , rowData])
+console.log("data to print",bname)
   };
 
   // useState(()=>{
@@ -216,6 +219,12 @@ const ProductTable = () => {
 
     html2pdf().set(opt).from(contentDiv).save();
   };
+  const taxamnt = rows.reduce((accumulator, item) => accumulator + item.tax_amount, 0);
+  const cgsttotal = rows.reduce((accumulator, item) => accumulator + item.cgst, 0);
+  const sgsttotal = rows.reduce((accumulator, item) => accumulator + item.sgst, 0);
+  const totalamnt = rows.reduce((accumulator, item) => accumulator + item.total, 0);
+
+
 
   return (
     <Box
@@ -364,6 +373,7 @@ const ProductTable = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
+          // overflowY:'auto',
         }}
       >
         {/* take code from here  */}
@@ -407,10 +417,11 @@ const ProductTable = () => {
                   height: "60%",
                   display: "flex",
                   flexDirection: "column",
+                  overflowY:'auto',
                 }}
               >
-                {["tyre 1", "tyre 2"].map((item) => (
-                  <Typography sx={{ fontSize: 15, m: 0.5 }}>{item}</Typography>
+                {bname.map((item) => (
+                  <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.name}</Typography>
                 ))}
               </Box>
               <Box
@@ -448,10 +459,12 @@ const ProductTable = () => {
                   flexDirection: "column",
                   display: "flex",
                   alignItems: "center",
+                  overflowY:'auto',
+
                 }}
               >
-                {[500, 1000].map((item) => (
-                  <Typography sx={{ fontSize: 15, m: 0.5 }}>{item}</Typography>
+                {rows.map((item) => (
+                  <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.tax_amount}</Typography>
                 ))}
               </Box>
               <Box
@@ -464,7 +477,7 @@ const ProductTable = () => {
                   borderTop: 1,
                 }}
               >
-                <Typography>1500</Typography>
+                <Typography>{taxamnt}</Typography>
               </Box>
             </Box>
           </Box>
@@ -519,8 +532,8 @@ const ProductTable = () => {
                   ))}
                 </Box>
                 <Box sx={{ width: '50%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', overflowY: 'scroll' }} >
-                  {[500, 1000, 500, 1000, 500, 1000, 500, 1000,].map((item) => (
-                    <Typography sx={{ fontSize: 15, m: 0.5 }}>{item}</Typography>
+                  {rows.map((item) => (
+                    <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.cgst}</Typography>
                   ))}
                 </Box>
               </Box>
@@ -534,7 +547,7 @@ const ProductTable = () => {
                   borderTop: 1,
                 }}
               >
-                <Typography sx={{ mx: 1 }} >1500</Typography>
+                <Typography sx={{ mx: 1 }} >{cgsttotal}</Typography>
               </Box>
             </Box>
             {/* CGST */}
@@ -576,9 +589,9 @@ const ProductTable = () => {
                     <Typography sx={{ fontSize: 15, m: 0.5 }}>{item}</Typography>
                   ))}
                 </Box>
-                <Box sx={{ width: '50%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', overflowY: 'scroll' }} >
-                  {[500, 1000, 500, 1000, 500, 1000, 500, 1000,].map((item) => (
-                    <Typography sx={{ fontSize: 15, m: 0.5 }}>{item}</Typography>
+                <Box sx={{ width: '50%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', overflowY: 'auto' }} >
+                {rows.map((item) => (
+                    <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.cgst}</Typography>
                   ))}
                 </Box>
               </Box>
@@ -592,7 +605,7 @@ const ProductTable = () => {
                   borderTop: 1,
                 }}
               >
-                <Typography sx={{ mx: 1 }} >1500</Typography>
+                <Typography sx={{ mx: 1 }} >{sgsttotal}</Typography>
               </Box>
             </Box>
             {/* Totalamount */}
@@ -620,8 +633,8 @@ const ProductTable = () => {
               >
 
                 <Box sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', overflowY: 'scroll' }} >
-                  {[500, 1000, 500, 1000, 500, 1000, 500, 1000,].map((item) => (
-                    <Typography sx={{ fontSize: 15, m: 0.5 }}>{item}</Typography>
+                {rows.map((item) => (
+                    <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.total}</Typography>
                   ))}
                 </Box>
               </Box>
@@ -635,7 +648,7 @@ const ProductTable = () => {
                   borderTop: 1,
                 }}
               >
-                <Typography sx={{ mx: 1 }} >1500</Typography>
+                <Typography sx={{ mx: 1 }} >{totalamnt}</Typography>
               </Box>
             </Box>
           </Box>

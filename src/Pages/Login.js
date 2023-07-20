@@ -45,9 +45,7 @@ export default function Login() {
       alert('Invalid Credentials')
       console.log(err)
     }
-
     // navigate('/dashboard')
-
   }
   return (
     <Box
