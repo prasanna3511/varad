@@ -51,7 +51,7 @@ const ProductTable = () => {
 
   const setRetailerData = (retailer) => {
     setRetailerRowData(retailer);
-    console.log(retailer);
+    console.log("data of mew",retailer);
   }
 
   const [productDataArray, setProductDataArray] = useState([]);
@@ -83,7 +83,7 @@ const ProductTable = () => {
     async function fetchData() {
 
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/getretailers`)
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/getstockist`)
         if (response.data.status) {
           console.log(response.data.data)
           setRetailers(response.data.data)
@@ -107,20 +107,20 @@ const ProductTable = () => {
     let cgst = parseFloat(((parseInt(data.rate_per_unit) - rate_per_unit) / 2).toFixed(2));
     let sgst = parseFloat(((parseInt(data.rate_per_unit) - rate_per_unit) / 2).toFixed(2));
     let total = (tax_amount + cgst + sgst).toFixed(2);
-
-    // if(parseInt((data.rate_per_unit).split('.')[1]) > 0.5){
-    //   rate_per_unit = Math.ceil(rate_per_unit);
-    // }else{
-    //   rate_per_unit = Math.floor(rate_per_unit);
-    // }
-
     let temp = { ...rowData, qty: data.quantity, rate_per_unit, tax_amount, cgst, sgst, total };
 
     setRows([...rows, temp]);
     console.log("rows are",rowData)
+    let purchasedata = {
+      purchase_date: (new Date()).toISOString().split('T')[0],
+      stockist_id: retailerRowData.id,
+      purchase_amount: total,
+      products:rows
+    }
+    console.log("this data for purchasing",purchasedata)
     // api
     try {
-        const response = await axios.post(`${process.env.REACT_APP_API_URL}/makepurchase`, rowData,
+        const response = await axios.post(`${process.env.REACT_APP_API_URL}/makepurchase`, purchasedata,
          
         {
             headers: {
@@ -290,13 +290,9 @@ console.log("data to print",bname)
             <TableHead>
               <TableRow>
                 <TableCell>Product Name</TableCell>
-                {/* <TableCell>HSN Code</TableCell> */}
-                {/* <TableCell>GST</TableCell> */}
+             
                 <TableCell>QTY Nos</TableCell>
-                {/* <TableCell>Rate per Unit</TableCell>
-                <TableCell>Taxable Amount</TableCell>
-                <TableCell>CGST</TableCell>
-                <TableCell>SGST</TableCell> */}
+              
                 <TableCell>Total</TableCell>
               </TableRow>
             </TableHead>
@@ -306,27 +302,11 @@ console.log("data to print",bname)
                   <TableCell>
                     <Typography>{row.name}</Typography>
                   </TableCell>
-                  {/* <TableCell>
-                    <Typography>{row.hsn}</Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography>{row.gst}</Typography>
-                  </TableCell> */}
+        
                   <TableCell>
                     <Typography>{row.qty}</Typography>
                   </TableCell>
-                  {/* <TableCell>
-                    <Typography>{row.rate_per_unit}</Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography>{row.tax_amount}</Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography>{row.cgst}</Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography>{row.sgst}</Typography>
-                  </TableCell> */}
+               
                   <TableCell>
                     <Typography>{row.total}</Typography>
                   </TableCell>
@@ -387,297 +367,10 @@ console.log("data to print",bname)
           <Button variant="contained" onClick={handleAddRow}>
             Add Product
           </Button>
-          {/* <Button variant="contained" onClick={handleDownloadPDF}>
-            Generate Bill
-          </Button> */}
+       
         </Box>
       </Box>
-      {/* <Box
-        sx={{
-          width: "100%",
-          height: 200,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          // overflowY:'auto',
-        }}
-      >
-   
-        <Box
-          sx={{
-            height: "100%",
-            width: "90%",
-            display: "flex",
-            flexDirection: "row",
-            boxShadow: 2
-          }}
-        >
-          <Box
-            sx={{
-              width: "45%",
-              height: "100%",
-              border: 1,
-              display: "flex",
-              flexDirection: "row",
-              borderColor: 'grey'
-              //   borderBottom: 1,
-              //   borderRight:1
-            }}
-          >
-            <Box sx={{ width: "50%", height: "100%", borderRight: 1 }}>
-              <Box
-                sx={{
-                  width: "100%",
-                  height: "20%",
-                  borderBottom: 1,
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Typography>HSN Code</Typography>
-              </Box>
-              <Box
-                sx={{
-                  width: "100%",
-                  height: "60%",
-                  display: "flex",
-                  flexDirection: "column",
-                  overflowY:'auto',
-                }}
-              >
-                {bname.map((item) => (
-                  <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.name}</Typography>
-                ))}
-              </Box>
-              <Box
-                sx={{
-                  width: "100%",
-                  height: "20%",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  borderTop: 1,
-                }}
-              >
-                <Typography>Total Amount</Typography>
-              </Box>
-            </Box>
-           
-            <Box sx={{ width: "50%", height: "100%" }}>
-              <Box
-                sx={{
-                  width: "100%",
-                  height: "20%",
-                  borderBottom: 1,
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Typography>Taxable Amount</Typography>
-              </Box>
-              <Box
-                sx={{
-                  width: "100%",
-                  height: "60%",
-                  display: "flex",
-                  flexDirection: "column",
-                  display: "flex",
-                  alignItems: "center",
-                  overflowY:'auto',
-
-                }}
-              >
-                {rows.map((item) => (
-                  <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.tax_amount}</Typography>
-                ))}
-              </Box>
-              <Box
-                sx={{
-                  width: "100%",
-                  height: "20%",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  borderTop: 1,
-                }}
-              >
-                <Typography>{taxamnt}</Typography>
-              </Box>
-            </Box>
-          </Box>
-          <Box
-            sx={{
-              width: "55%",
-              height: "100%",
-              borderBottom: 1,
-              borderTop: 1,
-              borderRight: 1,
-              display: "flex",
-              flexDirection: "row",
-            }}
-          >
-            <Box sx={{ width: "33.3%", height: "100%", borderRight: 1 }}>
-              <Box
-                sx={{
-                  width: "100%",
-                  height: "20%",
-                  borderBottom: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                }}
-              >
-                <Typography sx={{ fontSize: 14 }}>Gst</Typography>
-                <Box
-                  sx={{
-                    width: "100%",
-                    height: "40%",
-                    display: "flex",
-                    justifyContent: "space-around",
-                    borderTop: 1,
-                  }}
-                >
-                  <Typography sx={{ fontSize: 14 }}>Rate</Typography>
-                  <Typography sx={{ fontSize: 14 }}>Amount</Typography>
-                </Box>
-              </Box>
-              <Box
-                sx={{
-                  width: "100%",
-                  height: "60%",
-                  display: "flex",
-                  flexDirection: "row",
-                }}
-              >
-                <Box sx={{ width: '50%', height: '100%', borderRight: 1, display: 'flex', flexDirection: 'column' }} >
-                  {['14%', '15%'].map((item) => (
-                    <Typography sx={{ fontSize: 15, m: 0.5 }}>{item}</Typography>
-                  ))}
-                </Box>
-                <Box sx={{ width: '50%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', overflowY: 'scroll' }} >
-                  {rows.map((item) => (
-                    <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.cgst}</Typography>
-                  ))}
-                </Box>
-              </Box>
-              <Box
-                sx={{
-                  width: "100%",
-                  height: "20%",
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  alignItems: "center",
-                  borderTop: 1,
-                }}
-              >
-                <Typography sx={{ mx: 1 }} >{cgsttotal}</Typography>
-              </Box>
-            </Box>
-            <Box sx={{ width: "33.3%", height: "100%", borderRight: 1 }}>
-              <Box
-                sx={{
-                  width: "100%",
-                  height: "20%",
-                  borderBottom: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                }}
-              >
-                <Typography sx={{ fontSize: 14 }}>Sgst</Typography>
-                <Box
-                  sx={{
-                    width: "100%",
-                    height: "40%",
-                    display: "flex",
-                    justifyContent: "space-around",
-                    borderTop: 1,
-                  }}
-                >
-                  <Typography sx={{ fontSize: 14 }}>Rate</Typography>
-                  <Typography sx={{ fontSize: 14 }}>Amount</Typography>
-                </Box>
-              </Box>
-              <Box
-                sx={{
-                  width: "100%",
-                  height: "60%",
-                  display: "flex",
-                  flexDirection: "row",
-                }}
-              >
-                <Box sx={{ width: '50%', height: '100%', borderRight: 1, display: 'flex', flexDirection: 'column' }} >
-                  {['14%', '15%'].map((item) => (
-                    <Typography sx={{ fontSize: 15, m: 0.5 }}>{item}</Typography>
-                  ))}
-                </Box>
-                <Box sx={{ width: '50%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', overflowY: 'auto' }} >
-                {rows.map((item) => (
-                    <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.cgst}</Typography>
-                  ))}
-                </Box>
-              </Box>
-              <Box
-                sx={{
-                  width: "100%",
-                  height: "20%",
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  alignItems: "center",
-                  borderTop: 1,
-                }}
-              >
-                <Typography sx={{ mx: 1 }} >{sgsttotal}</Typography>
-              </Box>
-            </Box>
-            <Box sx={{ width: "33.3%", height: "100%", }}>
-              <Box
-                sx={{
-                  width: "100%",
-                  height: "20%",
-                  borderBottom: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                }}
-              >
-                <Typography sx={{ fontSize: 14 }}>Total Taxable Amount</Typography>
-
-              </Box>
-              <Box
-                sx={{
-                  width: "100%",
-                  height: "60%",
-                  display: "flex",
-                  flexDirection: "row",
-                }}
-              >
-
-                <Box sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', overflowY: 'scroll' }} >
-                {rows.map((item) => (
-                    <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.total}</Typography>
-                  ))}
-                </Box>
-              </Box>
-              <Box
-                sx={{
-                  width: "100%",
-                  height: "20%",
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  alignItems: "center",
-                  borderTop: 1,
-                }}
-              >
-                <Typography sx={{ mx: 1 }} >{totalamnt}</Typography>
-              </Box>
-            </Box>
-          </Box>
-        </Box>
-      </Box> */}
-      {/* take code till here  */}
+        {/* take code till here  */}
     </Box>
   );
 };
