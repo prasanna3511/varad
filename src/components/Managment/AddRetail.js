@@ -15,6 +15,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 export default function AlertDialogSlide(props) {
+  console.log("this values from props" , props.forRow)
 
   const handleClose = () => {
     props.setOpen(false);

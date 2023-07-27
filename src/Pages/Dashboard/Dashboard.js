@@ -24,6 +24,9 @@ const handleStockist=()=>{
 const handlepurchase =()=>{
   navigate('/purchase')
 }
+const handleBillBook =()=>{
+  navigate('/billbook')
+}
   return (
     <Box
       sx={{
@@ -273,7 +276,7 @@ const handlepurchase =()=>{
             alignItems: "center",
             // mr: -2,
           }}
-          onClick={handleretail}
+          onClick={handleBillBook}
 
         >
           <Box

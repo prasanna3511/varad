@@ -21,15 +21,10 @@ const ProductTable = () => {
   const [rows, setRows] = useState([]);
 
   const tableRef = useRef();
-  const [productName, setProductName] = useState("");
-  const [quantity, setquantity] = useState("");
-  const [size, setsize] = useState("");
+
 
   const [dropDown, setDropDown] = useState([]);
   const [retailers, setRetailers] = useState([]);
-
-  const [product, setProduct] = useState({});
-
   const [rowData, setRowData] = useState({});
 
   const [data, setData] = useState({});
@@ -96,6 +91,7 @@ const ProductTable = () => {
   }, [])
 
   const [bname ,setBname] = useState([])
+  let total
   const handleAddRow = () => {
 
     console.log(data.rate_per_unit)
@@ -104,7 +100,7 @@ const ProductTable = () => {
     let tax_amount = parseFloat(rate_per_unit * parseInt(data.quantity));
     let cgst = parseFloat(((parseInt(data.rate_per_unit) - rate_per_unit) / 2).toFixed(2));
     let sgst = parseFloat(((parseInt(data.rate_per_unit) - rate_per_unit) / 2).toFixed(2));
-    let total = (tax_amount + cgst + sgst).toFixed(2);
+     total = (tax_amount + cgst + sgst).toFixed(2);
     let temp = { ...rowData, qty: data.quantity, rate_per_unit, tax_amount, cgst, sgst, total };
     setRows([...rows, temp]);
     console.log("rows are",rowData)
@@ -115,6 +111,10 @@ console.log("data to print",bname)
   // useState(()=>{
 
   // }, [rowData])
+  const taxamnt = rows.reduce((accumulator, item) => accumulator + item.tax_amount, 0);
+  const cgsttotal = rows.reduce((accumulator, item) => accumulator + item.cgst, 0);
+  const sgsttotal = rows.reduce((accumulator, item) => accumulator + item.sgst, 0);
+  const totalamnt = rows.reduce((accumulator, item) => accumulator + parseFloat(item.total), 0);
 
   const handleDownloadPDF = () => {
 
@@ -122,7 +122,8 @@ console.log("data to print",bname)
     let dataForRequest = {
       invoiceDate: (new Date()).toISOString().split('T')[0],
       retailerId: retailerRowData.retailer_id,
-      products: rows
+      products: rows,
+      billing_amnt: totalamnt
     }
 
     console.log(dataForRequest);
@@ -297,10 +298,7 @@ console.log("data to print",bname)
 
     html2pdf().set(opt).from(contentDiv).save();  
   };
-  const taxamnt = rows.reduce((accumulator, item) => accumulator + item.tax_amount, 0);
-  const cgsttotal = rows.reduce((accumulator, item) => accumulator + item.cgst, 0);
-  const sgsttotal = rows.reduce((accumulator, item) => accumulator + item.sgst, 0);
-  const totalamnt = rows.reduce((accumulator, item) => accumulator + item.total, 0);
+  
 
 
 
