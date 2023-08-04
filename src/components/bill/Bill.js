@@ -16,6 +16,10 @@ import {
 import html2pdf from "html2pdf.js";
 import Navbar from "../Navbar";
 import axios from "axios";
+import Checkbox from '@mui/material/Checkbox';
+import DeleteIcon from '@mui/icons-material/Delete';
+
+const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 
 const ProductTable = () => {
   const [rows, setRows] = useState([]);
@@ -116,9 +120,13 @@ console.log("data to print",bname)
   const sgsttotal = rows.reduce((accumulator, item) => accumulator + item.sgst, 0);
   const totalamnt = rows.reduce((accumulator, item) => accumulator + parseFloat(item.total), 0);
 
+  const handleDeleteRow = (index) => {
+    const newRows = [...rows];
+    newRows.splice(index, 1);
+    setRows(newRows);
+    setBname(newRows)
+  };
   const handleDownloadPDF = () => {
-
-
     let dataForRequest = {
       invoiceDate: (new Date()).toISOString().split('T')[0],
       retailerId: retailerRowData.retailer_id,
@@ -142,10 +150,15 @@ console.log("data to print",bname)
 
 
     const element = tableRef.current.cloneNode(true);
-    // const rows = element.querySelectorAll("tr");
+    const newRows = element.querySelectorAll("tr");
 
-    const companyName = "Bhide Works";
-    const companyAddress = "Abhaynagr sangali";
+    // Loop through each row and remove the last cell (column)
+    newRows.forEach((row) => {
+      const cells = row.querySelectorAll("td, th");
+      const lastCell = cells[cells.length - 1];
+      row.removeChild(lastCell);
+    });
+   
     const phoneNumber = "Phone Number";
     const thankYouText = "Thank you!";
     const contentDiv = document.createElement("div");
@@ -165,95 +178,258 @@ console.log("data to print",bname)
     
     // this code for new box
     const additionalContentDiv = document.createElement("div");
-    additionalContentDiv.style.width = '100%';
+    additionalContentDiv.style.width = '800px';
     additionalContentDiv.style.display = "flex";
     additionalContentDiv.style.flexDirection = "row";
-    additionalContentDiv.style.justifyContent = "space-between";
+    // additionalContentDiv.style.justifyContent = "space-between";
     additionalContentDiv.style.marginTop = "20px";
+    additionalContentDiv.style.marginLeft = "20px";
+
   
     // HSN code
     const hsnDiv = document.createElement("div");
-    hsnDiv.style.width = "20%";
+    hsnDiv.style.width = "200px";
     hsnDiv.style.border = "1px solid black";
+    hsnDiv.style.display = "flex";
+    hsnDiv.style.justifyContent = "center";
+    hsnDiv.style.alignItems = "center";
+    hsnDiv.style.flexDirection = "column";
+    hsnDiv.style.marginLeft = "78px";
+
 
     const hsnTitle = document.createElement("div");
     hsnTitle.textContent = "HSN Code";
+    hsnTitle.style.width = "100%";
+    hsnTitle.style.display = "flex";
+    hsnTitle.style.justifyContent = "center";
+    hsnTitle.style.alignItems = "center";
+    hsnTitle.style.flexDirection = "column";
+
+    hsnTitle.style.borderBottom = "1px solid black";
     hsnDiv.appendChild(hsnTitle);
     rows.forEach((item) => {
       const hsnItem = document.createElement("div");
       hsnItem.textContent = item.hsn;
       hsnDiv.appendChild(hsnItem);
     });
+    const hsnTotal = document.createElement("div");
+    hsnTotal.textContent = "Total ";
+    hsnTotal.style.borderTop = "1px solid black";
+    hsnTotal.style.width = "100%";
+    hsnTotal.style.display = "flex";
+    hsnTotal.style.justifyContent = "center";
+    hsnTotal.style.alignItems = "center";
+    hsnTotal.style.flexDirection = "column";
+    hsnDiv.appendChild(hsnTotal);
+
     additionalContentDiv.appendChild(hsnDiv);
   
     // Taxable amount
     const taxableAmountDiv = document.createElement("div");
-    taxableAmountDiv.style.width = "20%";
+    taxableAmountDiv.style.width = "200px";
+    taxableAmountDiv.style.border = "1px solid black";
+    taxableAmountDiv.style.display = "flex";
+    taxableAmountDiv.style.justifyContent = "center";
+    taxableAmountDiv.style.alignItems = "center";
+    taxableAmountDiv.style.flexDirection = "column";
     const taxableAmountTitle = document.createElement("div");
     taxableAmountTitle.textContent = "Taxable Amount";
+    taxableAmountTitle.style.width = "100%";
+    taxableAmountTitle.style.display = "flex";
+    taxableAmountTitle.style.borderBottom = "1px solid black";
+    taxableAmountTitle.style.justifyContent = "center";
+    taxableAmountTitle.style.alignItems = "center";
+    taxableAmountTitle.style.flexDirection = "column";
+
     taxableAmountDiv.appendChild(taxableAmountTitle);
     rows.forEach((item) => {
       const taxableAmountItem = document.createElement("div");
-      const formattedTaxableAmount = item.tax_amount.toFixed(3);
+      const formattedTaxableAmount = item.tax_amount.toFixed(2);
 
       taxableAmountItem.textContent = formattedTaxableAmount;
       taxableAmountDiv.appendChild(taxableAmountItem);
     });
+    const taxableAmountToatal = document.createElement("div");
+    taxableAmountToatal.style.borderTop = "1px solid black";
+    taxableAmountToatal.style.width = "100%";
+    taxableAmountToatal.style.display = "flex";
+    taxableAmountToatal.style.justifyContent = "center";
+    taxableAmountToatal.style.alignItems = "center";
+    taxableAmountToatal.style.flexDirection = "column";
+    taxableAmountToatal.textContent = taxamnt.toFixed(2);
+    taxableAmountDiv.appendChild(taxableAmountToatal);
     additionalContentDiv.appendChild(taxableAmountDiv);
   
     // SGST
     const sgstDiv = document.createElement("div");
-    sgstDiv.style.width = "20%";
+    sgstDiv.style.width = "200px";
+    sgstDiv.style.border = "1px solid black";
+    sgstDiv.style.display = "flex";
+    sgstDiv.style.justifyContent = "center";
+    sgstDiv.style.alignItems = "center";
+    sgstDiv.style.flexDirection = "column";
+
     const sgstTitle = document.createElement("div");
     sgstTitle.textContent = "SGST";
+    sgstTitle.style.borderBottom = "1px solid black";
+    sgstTitle.style.width = "100%";
+    sgstTitle.style.display = "flex";
+    sgstTitle.style.justifyContent = "center";
+    sgstTitle.style.alignItems = "center";
+    sgstTitle.style.flexDirection = "column";
+
     sgstDiv.appendChild(sgstTitle);
     rows.forEach((item) => {
       const sgstItem = document.createElement("div");
       sgstItem.textContent = item.sgst;
       sgstDiv.appendChild(sgstItem);
     });
+    const sgstTotal = document.createElement("div");
+    sgstTotal.textContent = sgsttotal;
+    sgstTotal.style.borderTop = "1px solid black";
+    sgstTotal.style.width = "100%";
+    sgstTotal.style.display = "flex";
+    sgstTotal.style.justifyContent = "center";
+    sgstTotal.style.alignItems = "center";
+    sgstTotal.style.flexDirection = "column";
+
+    sgstDiv.appendChild(sgstTotal);
     additionalContentDiv.appendChild(sgstDiv);
   
     // CGST
     const cgstDiv = document.createElement("div");
-    cgstDiv.style.width = "20%";
+    cgstDiv.style.width = "200px";
+    cgstDiv.style.display = "flex";
+    cgstDiv.style.justifyContent = "center";
+    cgstDiv.style.alignItems = "center";
+    cgstDiv.style.flexDirection = "column";
+    cgstDiv.style.border = "1px solid black";
+
+
     const cgstTitle = document.createElement("div");
     cgstTitle.textContent = "CGST";
+    cgstTitle.style.borderBottom = "1px solid black";
+    cgstTitle.style.width = "100%";
+    cgstTitle.style.display = "flex";
+    cgstTitle.style.justifyContent = "center";
+    cgstTitle.style.alignItems = "center";
+    cgstTitle.style.flexDirection = "column";
+
     cgstDiv.appendChild(cgstTitle);
     rows.forEach((item) => {
       const cgstItem = document.createElement("div");
       cgstItem.textContent = item.cgst;
       cgstDiv.appendChild(cgstItem);
     });
+    const cgstTotal = document.createElement("div");
+    cgstTotal.textContent = cgsttotal;
+    cgstTotal.style.borderTop = "1px solid black";
+    cgstTotal.style.width = "100%";
+    cgstTotal.style.display = "flex";
+    cgstTotal.style.justifyContent = "center";
+    cgstTotal.style.alignItems = "center";
+    cgstTotal.style.flexDirection = "column";
+
+    cgstDiv.appendChild(cgstTotal);
     additionalContentDiv.appendChild(cgstDiv);
   
     // Total taxable amount
     const totalTaxableAmountDiv = document.createElement("div");
-    totalTaxableAmountDiv.style.width = "20%";
+    totalTaxableAmountDiv.style.width = "200px";
+    totalTaxableAmountDiv.style.border = "1px solid black";
+    totalTaxableAmountDiv.style.display = "flex";
+    totalTaxableAmountDiv.style.justifyContent = "center";
+    totalTaxableAmountDiv.style.alignItems = "center";
+    totalTaxableAmountDiv.style.flexDirection = "column";
+    
+
     const totalTaxableAmountTitle = document.createElement("div");
-    totalTaxableAmountTitle.textContent = "Total Taxable Amount";
+    totalTaxableAmountTitle.textContent = "Total Amount";
+    totalTaxableAmountTitle.style.borderBottom = "1px solid black";
+    totalTaxableAmountTitle.style.width = "100%";
+    totalTaxableAmountTitle.style.display = "flex";
+    totalTaxableAmountTitle.style.justifyContent = "center";
+    totalTaxableAmountTitle.style.alignItems = "center";
+    totalTaxableAmountTitle.style.flexDirection = "column";
+
     totalTaxableAmountDiv.appendChild(totalTaxableAmountTitle);
     rows.forEach((item) => {
       const totalTaxableAmountItem = document.createElement("div");
       totalTaxableAmountItem.textContent = item.total;
       totalTaxableAmountDiv.appendChild(totalTaxableAmountItem);
     });
+    // totalamnt
     additionalContentDiv.appendChild(totalTaxableAmountDiv);
+    // totalTaxableAmountItem = document.createElement("div");
+
+    const totalTaxableAmounttotal = document.createElement("div");
+    totalTaxableAmounttotal.textContent = totalamnt;
+    totalTaxableAmounttotal.style.borderTop = "1px solid black";
+    totalTaxableAmounttotal.style.width = "100%";
+    totalTaxableAmounttotal.style.display = "flex";
+    totalTaxableAmounttotal.style.justifyContent = "center";
+    totalTaxableAmounttotal.style.alignItems = "center";
+    totalTaxableAmounttotal.style.flexDirection = "column";
+
+
+      totalTaxableAmountDiv.appendChild(totalTaxableAmounttotal);
+
+    // totalTaxableAmountTitle.textContent = totalamnt;
+    // totalTaxableAmountDiv.appendChild(totalTaxableAmountTitle);
   
     contentDiv.appendChild(additionalContentDiv);
     //new box code ends here
 
 
     const companyNameElement = document.createElement("div");
-    companyNameElement.textContent = companyName;
+    // companyNameElement.style.border = "1px solid black";
+    companyNameElement.style.width = "91%";
+    companyNameElement.style.marginLeft = "88px";
+    companyNameElement.style.display = "flex";
+    companyNameElement.style.justifyContent = "space-between";
+    companyNameElement.style.alignItems = "center";
+
+
+
+
+
+    const nameofcompany = document.createElement("div");
+    nameofcompany.textContent = "Near S.T.Stand ,Sangli-416416 ,Maharashtra";
+    companyNameElement.appendChild(nameofcompany);
+
+    const sidename= document.createElement("div");
+    sidename.textContent = "Bill No: 1122334455";
+    companyNameElement.appendChild(sidename);
+
+
 
     const companyAddressElement = document.createElement("div");
-    companyAddressElement.textContent = companyAddress;
+    // companyAddressElement.style.border = "1px solid black";
+    companyAddressElement.style.width = "91%";
+    companyAddressElement.style.marginLeft = "88px";
+    companyAddressElement.style.display = "flex";
+    companyAddressElement.style.justifyContent = "space-between";
+    companyAddressElement.style.alignItems = "center";
+
+    // companyAddressElement.textContent = companyAddress;
+    const contact = document.createElement("div");
+    contact.textContent = "Contact:- 0233- 2332553 ,Gmail - bhideautostores@gmail.com";
+    companyAddressElement.appendChild(contact);
+
+    const date= document.createElement("div");
+    date.textContent = "Date : 1/8/2023";
+    companyAddressElement.appendChild(date);
+
+    
+    companyNameElement.appendChild(companyAddressElement);
 
     const billToDiv = document.createElement("div");
     billToDiv.style.border = "1px solid black";
     billToDiv.style.padding = "10px";
     billToDiv.style.marginTop = "10px";
+    billToDiv.style.marginLeft = "90px";
+    billToDiv.style.width = "88%";
+
 
     const billToLine = document.createElement("div");
     billToLine.textContent = "Bill to: prasanna joshi";
@@ -299,6 +475,18 @@ console.log("data to print",bname)
     html2pdf().set(opt).from(contentDiv).save();  
   };
   
+  const handleRow= (row)=>{
+console.log(row)
+setData(row)
+handleDataChange(row)
+  }
+  const [isChecked, setIsChecked] = useState(false);
+
+  const handleCheckboxChange = (event) => {
+    setIsChecked(event.target.checked);
+  };
+  console.log(isChecked)
+
 
 
 
@@ -348,11 +536,13 @@ console.log("data to print",bname)
                 <TableCell>CGST</TableCell>
                 <TableCell>SGST</TableCell>
                 <TableCell>Total</TableCell>
+                <TableCell>Remove Icon</TableCell>
+
               </TableRow>
             </TableHead>
             <TableBody>
               {rows.map((row, index) => (
-                <TableRow key={index}>
+                <TableRow key={index} onClick={()=>{handleRow(row)}} >
                   <TableCell>
                     <Typography>{row.name}</Typography>
                   </TableCell>
@@ -369,7 +559,7 @@ console.log("data to print",bname)
                     <Typography>{row.rate_per_unit}</Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography>{row.tax_amount}</Typography>
+                    <Typography>{row.tax_amount.toFixed(2)}</Typography>
                   </TableCell>
                   <TableCell>
                     <Typography>{row.cgst}</Typography>
@@ -380,6 +570,12 @@ console.log("data to print",bname)
                   <TableCell>
                     <Typography>{row.total}</Typography>
                   </TableCell>
+                  <TableCell>
+        <DeleteIcon
+          onClick={() => handleDeleteRow(index)}
+          sx={{ cursor: 'pointer' , color:'#FF6B35' }}
+        />
+      </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -434,6 +630,10 @@ console.log("data to print",bname)
             value={data.rate_per_unit}
             onChange={(e) => handleDataChange("rate_per_unit", e.target.value)}
           />
+          <Box sx={{display:'flex' , flexDirection:'row' , justifyContent:'center' , alignItems:'center' }} >
+          <Checkbox {...label} checked={isChecked} onChange={handleCheckboxChange} />
+          <Typography>With GST</Typography>
+          </Box>
           <Button variant="contained" onClick={handleAddRow}>
             Add Product
           </Button>
@@ -543,7 +743,7 @@ console.log("data to print",bname)
                 }}
               >
                 {rows.map((item) => (
-                  <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.tax_amount}</Typography>
+                  <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.tax_amount.toFixed(2)}</Typography>
                 ))}
               </Box>
               <Box
@@ -557,7 +757,7 @@ console.log("data to print",bname)
                   mt:2
                 }}
               >
-                <Typography>{taxamnt}</Typography>
+                <Typography>{taxamnt.toFixed(2)}</Typography>
               </Box>
             </Box>
           </Box>
@@ -631,7 +831,7 @@ console.log("data to print",bname)
                   mt:2
                 }}
               >
-                <Typography sx={{ mx: 1 }} >{cgsttotal}</Typography>
+                <Typography sx={{ mx: 1 }} >{cgsttotal.toFixed(2)}</Typography>
               </Box>
             </Box>
             {/* CGST */}
@@ -692,7 +892,7 @@ console.log("data to print",bname)
                   mt:2
                 }}
               >
-                <Typography sx={{ mx: 1 }} >{sgsttotal}</Typography>
+                <Typography sx={{ mx: 1 }} >{sgsttotal.toFixed(2)}</Typography>
               </Box>
             </Box>
             {/* Totalamount */}
@@ -738,7 +938,7 @@ console.log("data to print",bname)
                   mt:2
                 }}
               >
-                <Typography sx={{ mx: 1 }} >{totalamnt}</Typography>
+                <Typography sx={{ mx: 1 }} >{totalamnt.toFixed(2)}</Typography>
               </Box>
             </Box>
           </Box>
@@ -750,3 +950,13 @@ console.log("data to print",bname)
 };
 
 export default ProductTable;
+
+
+// select
+// case
+// when ((A=B)!=c) or ((B=c)!=A) or ((A=C)!=B) then "Isosceles"
+// when  (A=B=C) then "Equilateral"
+// when  (A!=B!=C) then "Scalene"
+// when  (A+B<C) then "Not A Triangle"
+// end 
+// from TRIANGLES

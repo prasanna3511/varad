@@ -55,6 +55,25 @@ const ProductTable = () => {
   }
 
   const [productDataArray, setProductDataArray] = useState([]);
+  useEffect(() => {
+
+    async function getProducts() {
+      try {
+
+        let response = await axios.get(`${process.env.REACT_APP_API_URL}/getpurchase`)
+
+
+        console.log('all purchase requests : ', response.data.data)
+        if (response.data.status) {
+          setRows(response.data.data)
+        }
+
+      } catch (err) {
+        console.log("error fetching data",err)
+      }
+    }
+    getProducts()
+  }, [])
 
   // Get all products
   useEffect(() => {
@@ -100,22 +119,26 @@ const ProductTable = () => {
   const [bname ,setBname] = useState([])
   const handleAddRow = async () => {
 
-    console.log(data.rate_per_unit)
+    console.log(data)
 
-    let rate_per_unit = parseFloat((parseInt(data.rate_per_unit) / (parseInt(rowData.gst) / 100 + 1)).toFixed(2));
-    let tax_amount = parseFloat(rate_per_unit * parseInt(data.quantity));
-    let cgst = parseFloat(((parseInt(data.rate_per_unit) - rate_per_unit) / 2).toFixed(2));
-    let sgst = parseFloat(((parseInt(data.rate_per_unit) - rate_per_unit) / 2).toFixed(2));
-    let total = (tax_amount + cgst + sgst).toFixed(2);
-    let temp = { ...rowData, qty: data.quantity, rate_per_unit, tax_amount, cgst, sgst, total };
+    let rate_per_unit = parseFloat((parseInt(data.purchase_amount) / (parseInt(data.qty) )).toFixed(2));
+    // let tax_amount = parseFloat(rate_per_unit * parseInt(data.quantity));
+    // let cgst = parseFloat(((parseInt(data.rate_per_unit) - rate_per_unit) / 2).toFixed(2));
+    // let sgst = parseFloat(((parseInt(data.rate_per_unit) - rate_per_unit) / 2).toFixed(2));
+    // let total = (tax_amount + cgst + sgst).toFixed(2);
+    let temp = { ...rowData, qty: data.qty,name:data.name, rate_per_unit, purchase_amount:data.purchase_amount };
 
     setRows([...rows, temp]);
-    console.log("rows are",rowData)
+    // setRows(data);
+
+    console.log("rows are",rows)
     let purchasedata = {
       purchase_date: (new Date()).toISOString().split('T')[0],
       stockist_id: retailerRowData.id,
-      purchase_amount: total,
-      products:rows
+      purchase_amount: data.purchase_amount,
+      products:rows,
+      qty:data.qty,
+      rate_per_unit:rate_per_unit
     }
     console.log("this data for purchasing",purchasedata)
     // api
@@ -138,117 +161,14 @@ const ProductTable = () => {
       }
       //api
     setBname([...bname , rowData])
-console.log("data to print",bname)
+console.log("data to print",rows)
   };
 
   // useState(()=>{
 
   // }, [rowData])
 
-  const handleDownloadPDF = () => {
-
-
-    let dataForRequest = {
-      invoiceDate: (new Date()).toISOString().split('T')[0],
-      retailerId: retailerRowData.retailer_id,
-      products: rows
-    }
-
-    console.log(dataForRequest);
-
-
-    try{
-
-      const response = axios.post(`${process.env.REACT_APP_API_URL}/createinvoice`, dataForRequest);
-
-      console.log(response.data);
-
-
-    }catch(e){
-      console.log(e);
-    }
-
-
-    const element = tableRef.current.cloneNode(true);
-    // const rows = element.querySelectorAll("tr");
-
-    const companyName = "Bhide Works";
-    const companyAddress = "Abhaynagr sangali";
-    const phoneNumber = "Phone Number";
-    const thankYouText = "Thank you!";
-    const contentDiv = document.createElement("div");
-    contentDiv.style.display = "flex";
-    contentDiv.style.flexDirection = "column";
-    contentDiv.style.justifyContent = "center";
-  contentDiv.style.alignItems = "center";
-
-    const headerDiv = document.createElement("div");
-    headerDiv.style.width = '800px';
-    headerDiv.style.height = 400;
-    headerDiv.style.textAlign = "center";
-    headerDiv.style.display = "flex";
-    headerDiv.style.flexDirection = "column";
-    // headerDiv.style.alignItems = "center";
-    // headerDiv.style.justifyContent = "center";
-
-
-    const companyNameElement = document.createElement("div");
-    companyNameElement.textContent = companyName;
-
-    const companyAddressElement = document.createElement("div");
-    companyAddressElement.textContent = companyAddress;
-
-    const billToDiv = document.createElement("div");
-    billToDiv.style.border = "1px solid black";
-    billToDiv.style.padding = "10px";
-    billToDiv.style.marginTop = "10px";
-
-    const billToLine = document.createElement("div");
-    billToLine.textContent = "Bill to: prasanna joshi";
-
-    const stateLine = document.createElement("div");
-    stateLine.textContent = "State: maharashtra";
-
-    const gstInLine = document.createElement("div");
-    gstInLine.textContent = "GstIn: 2722828282";
-
-    billToDiv.appendChild(billToLine);
-    billToDiv.appendChild(stateLine);
-    billToDiv.appendChild(gstInLine);
-
-    headerDiv.appendChild(companyNameElement);
-    headerDiv.appendChild(companyAddressElement);
-    headerDiv.appendChild(billToDiv);
-
-    const tableDiv = document.createElement("div");
-    tableDiv.style.width = '100%';
-    // tableDiv.style.border = "1px solid black";
-
-    tableDiv.appendChild(element);
-
-    const footerDiv = document.createElement("div");
-    footerDiv.style.width = "100%";
-    footerDiv.style.textAlign = "center";
-    footerDiv.textContent = `${phoneNumber}\n${thankYouText}`;
-
-    contentDiv.appendChild(headerDiv);
-    contentDiv.appendChild(tableDiv);
-    contentDiv.appendChild(footerDiv);
-
-    const opt = {
-      margin: 1,
-      filename: "product_table.pdf",
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2 , width:800 , display:'flex' , justifyContent:'center', alignItems: 'center'},
-      jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
-    };
-
-    html2pdf().set(opt).from(contentDiv).save();
-  };
-  const taxamnt = rows.reduce((accumulator, item) => accumulator + item.tax_amount, 0);
-  const cgsttotal = rows.reduce((accumulator, item) => accumulator + item.cgst, 0);
-  const sgsttotal = rows.reduce((accumulator, item) => accumulator + item.sgst, 0);
-  const totalamnt = rows.reduce((accumulator, item) => accumulator + item.total, 0);
+  
 
 
 
@@ -289,15 +209,17 @@ console.log("data to print",bname)
           <Table ref={tableRef}>
             <TableHead>
               <TableRow>
-                <TableCell>Product Name</TableCell>
+                <TableCell>Retailer Name</TableCell>
              
                 <TableCell>QTY Nos</TableCell>
+                <TableCell>Rate Per Unit</TableCell>
+
               
                 <TableCell>Total</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row, index) => (
+              {rows?.map((row, index) => (
                 <TableRow key={index}>
                   <TableCell>
                     <Typography>{row.name}</Typography>
@@ -306,9 +228,12 @@ console.log("data to print",bname)
                   <TableCell>
                     <Typography>{row.qty}</Typography>
                   </TableCell>
+                  <TableCell>
+                    <Typography>{row.rate_per_unit}</Typography>
+                  </TableCell>
                
                   <TableCell>
-                    <Typography>{row.total}</Typography>
+                    <Typography>{row.purchase_amount}</Typography>
                   </TableCell>
                 </TableRow>
               ))}
@@ -354,15 +279,15 @@ console.log("data to print",bname)
             placeholder="Quantity"
             size="small"
             sx={{ width: 300 }}
-            value={data.quantity}
-            onChange={(e) => handleDataChange("quantity", e.target.value)}
+            value={data.qty}
+            onChange={(e) => handleDataChange("qty", e.target.value)}
           />
           <TextField
             placeholder="Price"
             size="small"
             sx={{ width: 300 }}
-            value={data.rate_per_unit}
-            onChange={(e) => handleDataChange("rate_per_unit", e.target.value)}
+            value={data.purchase_amount}
+            onChange={(e) => handleDataChange("purchase_amount", e.target.value)}
           />
           <Button variant="contained" onClick={handleAddRow}>
             Add Product

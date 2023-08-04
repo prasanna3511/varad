@@ -33,6 +33,7 @@ export default function CompleteBill() {
     
         fetchData();
       }, [location.state]);
+      
   const taxableamnttotal = forProduct.reduce((accumulator, item) => accumulator + item.taxable_amount, 0);
   const cgsttotal = forProduct.reduce((accumulator, item) => accumulator + item.cgst, 0);
   const sgsttotal = forProduct.reduce((accumulator, item) => accumulator + item.sgst, 0);
