@@ -238,7 +238,7 @@ export default function FullFeaturedCrudGrid() {
 
           <Box sx={{ width: '100%', display: 'flex', justifyContent: "flex-end" }} >
             <Button color="primary" startIcon={<AddIcon />} onClick={handleClick} sx={{ border: 1, backgroundColor: '#3457D5', color: 'white', fontSize: 12, mx: 2, my: 1 }} >
-              Add Product
+              Add Retailer
             </Button>
           </Box>
 

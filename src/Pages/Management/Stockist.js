@@ -139,7 +139,7 @@ export default function FullFeaturedCrudGrid() {
    
     {
       field: 'gst_number',
-      headerName: 'GST',
+      headerName: 'GST Number',
       // type: 'number',
       width: 210, align: 'center',
       headerAlign: 'center',
@@ -182,13 +182,13 @@ export default function FullFeaturedCrudGrid() {
     >
 
       <Box sx={{ width: '100%', height: '100%', }} >
-        <Navbar name={' Stokist '} />
+        <Navbar name={' Company '} />
         <Box sx={{ width: '60%', height: '100%', mx: '20%' }} >
 
 
           <Box sx={{ width: '100%', display: 'flex', justifyContent: "flex-end" }} >
             <Button color="primary" startIcon={<AddIcon />} onClick={handleRowClick} sx={{ border: 1, backgroundColor: '#3457D5', color: 'white', fontSize: 12, mx: 2, my: 1 }} >
-              Add Product
+              Add Company
             </Button>
           </Box>
 

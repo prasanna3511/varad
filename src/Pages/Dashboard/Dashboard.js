@@ -341,7 +341,7 @@ const handleBillBook =()=>{
             <Typography
               sx={{ color: "white", alignSelf: "center", fontSize: 20, fontWeight:600 }}
             >
-              Stockist
+              Company
             </Typography>
             <Typography
               sx={{ color: "white", alignSelf: "center", fontSize: 20 , fontWeight:600 }}
