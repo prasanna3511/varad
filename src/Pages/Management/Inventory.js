@@ -217,7 +217,7 @@ const [rowdata , setRowData]=useState({})
     >
 
       <Box sx={{ width: '100%', height: '100%', }} >
-        <Navbar name={' Retail Management'} />
+        <Navbar name={' Inventory'} />
         <Box sx={{ width: '80%', height: '100%', mx: '10%' }} >
 
 

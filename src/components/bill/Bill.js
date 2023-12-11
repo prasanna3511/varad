@@ -26,6 +26,8 @@ const ProductTable = () => {
 
   const tableRef = useRef();
 
+  const [enableCashBill, setEnableCashBill] = useState(true);
+
 
   const [dropDown, setDropDown] = useState([]);
   const [retailers, setRetailers] = useState([]);
@@ -94,22 +96,39 @@ const ProductTable = () => {
 
   }, [])
 
-  const [bname ,setBname] = useState([])
+  const [bname, setBname] = useState([])
   let total
   const handleAddRow = () => {
 
-    console.log(data.rate_per_unit)
-
-    let rate_per_unit = parseFloat((parseInt(data.rate_per_unit) / (parseInt(rowData.gst) / 100 + 1)).toFixed(2));
-    let tax_amount = parseFloat(rate_per_unit * parseInt(data.quantity));
-    let cgst = parseFloat(((parseInt(data.rate_per_unit) - rate_per_unit) / 2).toFixed(2));
-    let sgst = parseFloat(((parseInt(data.rate_per_unit) - rate_per_unit) / 2).toFixed(2));
-     total = (tax_amount + cgst + sgst).toFixed(2);
-    let temp = { ...rowData, qty: data.quantity, rate_per_unit, tax_amount, cgst, sgst, total };
-    setRows([...rows, temp]);
-    console.log("rows are",rowData)
-    setBname([...bname , rowData])
-console.log("data to print",bname)
+    if (!isChecked) {
+      let rate_per_unit = parseFloat((parseInt(data.rate_per_unit) / (parseInt(rowData.gst) / 100 + 1)).toFixed(2));
+      let tax_amount = parseFloat(rate_per_unit * parseFloat(data.quantity));
+      let cgst = parseFloat((tax_amount / 2).toFixed(2));
+      let sgst = parseFloat((tax_amount / 2).toFixed(2));
+      total = (tax_amount + cgst + sgst).toFixed(2);
+      let temp = { ...rowData, quantity: data.quantity, rate_per_unit, tax_amount, cgst, sgst, total };
+      setRows([...rows, temp]);
+      console.log("rows are", rowData)
+      setBname([...bname, rowData])
+      console.log("data to print", bname)
+    }else{
+      let rate_per_unit =parseFloat(data.rate_per_unit);
+      let tax_amount = rate_per_unit * parseFloat(data.quantity);
+      let cgst = 0.0;
+      let sgst = 0.0;
+      total = (tax_amount + cgst + sgst).toFixed(2);
+      let temp = { ...rowData, quantity: data.quantity, rate_per_unit, tax_amount, cgst, sgst, total };
+      setRows([...rows, temp]);
+      console.log("rows are", rowData)
+      setBname([...bname, rowData])
+      console.log("data to print", bname)
+    }
+    setData({
+      quantity: 0,
+      rate_per_unit: 0,
+      name: "",
+    });
+    setEnableCashBill(false);
   };
 
   // useState(()=>{
@@ -131,20 +150,21 @@ console.log("data to print",bname)
       invoiceDate: (new Date()).toISOString().split('T')[0],
       retailerId: retailerRowData.retailer_id,
       products: rows,
-      billing_amnt: totalamnt
+      billing_amnt: totalamnt,
+      is_gst: !isChecked
     }
 
     console.log(dataForRequest);
 
 
-    try{
+    try {
 
       const response = axios.post(`${process.env.REACT_APP_API_URL}/createinvoice`, dataForRequest);
 
       console.log(response.data);
 
 
-    }catch(e){
+    } catch (e) {
       console.log(e);
     }
 
@@ -165,7 +185,7 @@ console.log("data to print",bname)
     contentDiv.style.display = "flex";
     contentDiv.style.flexDirection = "column";
     contentDiv.style.justifyContent = "center";
-  contentDiv.style.alignItems = "center";
+    contentDiv.style.alignItems = "center";
 
     const headerDiv = document.createElement("div");
     headerDiv.style.width = '800px';
@@ -175,7 +195,7 @@ console.log("data to print",bname)
     headerDiv.style.flexDirection = "column";
     // headerDiv.style.alignItems = "center";
     // headerDiv.style.justifyContent = "center";
-    
+
     // this code for new box
     const additionalContentDiv = document.createElement("div");
     additionalContentDiv.style.width = '800px';
@@ -223,7 +243,7 @@ console.log("data to print",bname)
     hsnDiv.appendChild(hsnTotal);
 
     additionalContentDiv.appendChild(hsnDiv);
-  
+
     // Taxable amount
     const taxableAmountDiv = document.createElement("div");
     taxableAmountDiv.style.width = "200px";
@@ -259,7 +279,7 @@ console.log("data to print",bname)
     taxableAmountToatal.textContent = taxamnt.toFixed(2);
     taxableAmountDiv.appendChild(taxableAmountToatal);
     additionalContentDiv.appendChild(taxableAmountDiv);
-  
+
     // SGST
     const sgstDiv = document.createElement("div");
     sgstDiv.style.width = "200px";
@@ -295,7 +315,7 @@ console.log("data to print",bname)
 
     sgstDiv.appendChild(sgstTotal);
     additionalContentDiv.appendChild(sgstDiv);
-  
+
     // CGST
     const cgstDiv = document.createElement("div");
     cgstDiv.style.width = "200px";
@@ -332,7 +352,7 @@ console.log("data to print",bname)
 
     cgstDiv.appendChild(cgstTotal);
     additionalContentDiv.appendChild(cgstDiv);
-  
+
     // Total taxable amount
     const totalTaxableAmountDiv = document.createElement("div");
     totalTaxableAmountDiv.style.width = "200px";
@@ -468,11 +488,11 @@ console.log("data to print",bname)
       margin: 1,
       filename: "product_table.pdf",
       image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2 , width:800 , display:'flex' , justifyContent:'center', alignItems: 'center'},
+      html2canvas: { scale: 2, width: 800, display: 'flex', justifyContent: 'center', alignItems: 'center' },
       jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
     };
 
-    html2pdf().set(opt).from(contentDiv).save();  
+    html2pdf().set(opt).from(contentDiv).save();
   };
   
   const handleRow= (row)=>{
@@ -553,7 +573,7 @@ handleDataChange(row)
                     <Typography>{row.gst}</Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography>{row.qty}</Typography>
+                    <Typography>{row.quantity}</Typography>
                   </TableCell>
                   <TableCell>
                     <Typography>{row.rate_per_unit}</Typography>
@@ -683,7 +703,7 @@ handleDataChange(row)
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  mb:1
+                  mb: 1
                 }}
               >
                 <Typography>HSN Code</Typography>
@@ -694,7 +714,7 @@ handleDataChange(row)
                   height: "60%",
                   display: "flex",
                   flexDirection: "column",
-                  overflowY:'auto',
+                  overflowY: 'auto',
                 }}
               >
                 {bname.map((item) => (
@@ -709,7 +729,7 @@ handleDataChange(row)
                   justifyContent: "center",
                   alignItems: "center",
                   borderTop: 1,
-                  mt:2,
+                  mt: 2,
                 }}
               >
                 <Typography>Total Amount</Typography>
@@ -725,7 +745,7 @@ handleDataChange(row)
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  mb:1
+                  mb: 1
                 }}
               >
                 <Typography>Taxable Amount</Typography>
@@ -738,7 +758,7 @@ handleDataChange(row)
                   flexDirection: "column",
                   display: "flex",
                   alignItems: "center",
-                  overflowY:'auto',
+                  overflowY: 'auto',
 
                 }}
               >
@@ -754,7 +774,7 @@ handleDataChange(row)
                   justifyContent: "center",
                   alignItems: "center",
                   borderTop: 1,
-                  mt:2
+                  mt: 2
                 }}
               >
                 <Typography>{taxamnt.toFixed(2)}</Typography>
@@ -782,7 +802,7 @@ handleDataChange(row)
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                  mb:1
+                  mb: 1
                 }}
               >
                 <Typography sx={{ fontSize: 14 }}>CGst</Typography>
@@ -793,7 +813,7 @@ handleDataChange(row)
                     display: "flex",
                     justifyContent: "space-around",
                     borderTop: 1,
-                   
+
                   }}
                 >
                   <Typography sx={{ fontSize: 14 }}>Rate</Typography>
@@ -809,9 +829,9 @@ handleDataChange(row)
                 }}
               >
                 <Box sx={{ width: '50%', height: '100%', borderRight: 1, display: 'flex', flexDirection: 'column' }} >
-                  {/* {['14%'].map((item) => (
-                    <Typography sx={{ fontSize: 15, m: 0.5 }}>{item}</Typography>
-                  ))} */}
+                {rows.map((item) => (
+                    <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.gst/2}</Typography>
+                  ))}
                 </Box>
                 <Box sx={{ width: '50%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', }} >
                   {rows.map((item) => (
@@ -828,7 +848,7 @@ handleDataChange(row)
                   alignItems: "center",
                   borderBottom: 1,
                   borderTop: 1,
-                  mt:2
+                  mt: 2
                 }}
               >
                 <Typography sx={{ mx: 1 }} >{cgsttotal.toFixed(2)}</Typography>
@@ -844,7 +864,7 @@ handleDataChange(row)
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                  mb:1
+                  mb: 1
                 }}
               >
                 <Typography sx={{ fontSize: 14 }}>Sgst</Typography>
@@ -871,11 +891,11 @@ handleDataChange(row)
               >
                 <Box sx={{ width: '50%', height: '100%', borderRight: 1, display: 'flex', flexDirection: 'column' }} >
                   {rows.map((item) => (
-                    <Typography sx={{ fontSize: 15, m: 0.5 }}></Typography>
+                    <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.gst/2}</Typography>
                   ))}
                 </Box>
                 <Box sx={{ width: '50%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', overflowY: 'auto' }} >
-                {rows.map((item) => (
+                  {rows.map((item) => (
                     <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.sgst}</Typography>
                   ))}
                 </Box>
@@ -889,7 +909,7 @@ handleDataChange(row)
                   alignItems: "center",
                   borderTop: 1,
                   borderBottom: 1,
-                  mt:2
+                  mt: 2
                 }}
               >
                 <Typography sx={{ mx: 1 }} >{sgsttotal.toFixed(2)}</Typography>
@@ -905,7 +925,7 @@ handleDataChange(row)
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                  mb:1
+                  mb: 1
                 }}
               >
                 <Typography sx={{ fontSize: 14 }}>Total Taxable Amount</Typography>
@@ -921,9 +941,9 @@ handleDataChange(row)
               >
 
                 <Box sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', overflowY: 'scroll' }} >
-                {rows.map((item) => (
+                  {rows.map((item) => (
                     <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.total}</Typography>
-                  ))} 
+                  ))}
                 </Box>
               </Box>
               <Box
@@ -935,7 +955,7 @@ handleDataChange(row)
                   alignItems: "center",
                   borderTop: 1,
                   borderBottom: 1,
-                  mt:2
+                  mt: 2
                 }}
               >
                 <Typography sx={{ mx: 1 }} >{totalamnt.toFixed(2)}</Typography>

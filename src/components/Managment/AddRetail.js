@@ -61,7 +61,7 @@ export default function AlertDialogSlide(props) {
         onClose={handleClose}
         aria-describedby="alert-dialog-slide-description"
       >
-        <Box sx={{ width: 550, height: 500, display: 'flex' }} >
+        <Box sx={{ width: 550, height: 550, display: 'flex' }} >
           <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }} >
             <Box sx={{ width: '80%', display: "flex", justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }} >
               <Box sx={{ width: '90%' }} >
@@ -110,6 +110,23 @@ export default function AlertDialogSlide(props) {
                 sx={{ width: '90%', align: 'center', mx: 0.5 }}
               />
             </Box>
+            
+            <Box sx={{ width: '80%', display: "flex", justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }} >
+              <Box sx={{ width: '90%' }} >
+                <Typography sx={{ my: 0.5, }} >Address</Typography>
+              </Box>
+              <TextField
+                //   fullWidth
+                size="small"
+                placeholder="Address"
+                value={data.address}
+                onChange={(e) => {
+                  handleChange("address", e.target.value);
+                }}
+                sx={{ width: '90%', align: 'center', mx: 0.5 }}
+              />
+            </Box>
+
             <Box sx={{ width: '80%', display: "flex", justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }} >
               <Box sx={{ width: '90%' }} >
                 <Typography sx={{ my: 0.5, }} >Route Name</Typography>

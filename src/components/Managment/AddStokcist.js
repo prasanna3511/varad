@@ -130,7 +130,7 @@ export default function AlertDialogSlide(props) {
             </Box>
             <Box sx={{ width: '80%', display: "flex", justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }} >
               <Box sx={{ width: '90%' }} >
-                <Typography sx={{ my: 0.5, }} >Unit</Typography>
+                <Typography sx={{ my: 0.5, }} >Contact Number</Typography>
               </Box>
               <TextField
                 //   fullWidth
