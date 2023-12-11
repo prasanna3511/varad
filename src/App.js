@@ -9,6 +9,8 @@ import Stockist from './Pages/Management/Stockist'
 import Purchase from './Pages/Management/Purchase'
 import BillBook from './Pages/Management/BillBook'
 import CompleteBill from './components/CompleteBill/CompleteBill';
+import StockistBill from './components/CompleteBill/StockistBill';
+
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
     <Route path="/purchase" element={  <Purchase/>} />
     <Route path="/billbook" element={  <BillBook/>} />
     <Route path="/completebill" element={  <CompleteBill/>} />
+    <Route path="/stockistbill" element={  <StockistBill/>} />
+
     </Routes>
     </BrowserRouter>
   );

@@ -17,15 +17,15 @@ export default function CompleteBill() {
         async function fetchData() {
           try {
             let response = await axios(
-              `${process.env.REACT_APP_API_URL}/getInvoice?id=${location.state.row.id}`,
+              `${process.env.REACT_APP_API_URL}/getpurchaseproduct?id=${location.state.row.purchase_id}`,
               {
                 method: "GET",
                 "Content-Type": "application/json",
               }
             );
     console.log("response of the all data is here" , response)
-    setData(response.data.data)
-    setForProduct(response.data.data.products)
+    // setData(response.data.data)
+    setForProduct(response.data.data)
           } catch (e) {
             console.log("Error : " + e);
           }
@@ -34,10 +34,10 @@ export default function CompleteBill() {
         fetchData();
       }, [location.state]);
       
-  const taxableamnttotal = forProduct.reduce((accumulator, item) => accumulator + item.taxable_amount, 0);
+  const taxableamnttotal = forProduct.reduce((accumulator, item) => accumulator + item.buying_amount, 0);
   const cgsttotal = forProduct.reduce((accumulator, item) => accumulator + item.cgst, 0);
   const sgsttotal = forProduct.reduce((accumulator, item) => accumulator + item.sgst, 0);
-  const finaltotal = forProduct.reduce((accumulator, item) => accumulator + item.total, 0);
+  const finaltotal = forProduct.reduce((accumulator, item) => accumulator + item.buying_amount, 0);
 
   function isValidDate(dateString) {
     const dateObj = new Date(dateString);
@@ -65,17 +65,17 @@ export default function CompleteBill() {
                 </Box>
                 {/* right side columns */}
                 <Box sx={{width:'20%' , height:'100%', display:'flex' , flexDirection:'column',justifyContent:'center', alignItems:'flex-end',mx:1}} >
-                <Typography>No: {data.invoice_number}</Typography>
-                <Typography>Date: {isValidDate(data.invoice_date) ? new Date(data.invoice_date).toISOString().slice(0, 10) : "Invalid Date"}</Typography>
+                <Typography>No: {location?.state?.row?.purchase_id}</Typography>
+                <Typography>Date:{ new Date(location?.state?.row?.purchase_date).toISOString().split('T')[0] }</Typography>
                 </Box>
             </Box>
         </Box>
         {/* upper columns ends here */}
         <Box sx={{width:'100%' , height:70 , display:'flex' , flexDirection:'column' , justifyContent:'center' , alignItems:'center'}} >
             <Box sx={{width:'80%' , height:'100%' , border:1}} >
-            <Typography sx={{fontWeight:'bold' ,mx:1}} >Bill To : {data.name}</Typography>
-                <Typography sx={{fontWeight:'bold' ,mx:1}}>State : {data.state}</Typography>
-                <Typography sx={{fontWeight:'bold' ,mx:1}}>GSTIN : {data.gst_number}</Typography>
+            <Typography sx={{fontWeight:'bold' ,mx:1}} >Bill From : {location?.state?.row?.name}</Typography>
+                <Typography sx={{fontWeight:'bold' ,mx:1}}>State : prasanna</Typography>
+                <Typography sx={{fontWeight:'bold' ,mx:1}}>GSTIN : {location?.state?.row?.gst_number}</Typography>
             </Box>
          </Box>
 {/* table code  */}
@@ -121,10 +121,10 @@ export default function CompleteBill() {
                   <TableCell><Typography>{row.gst}</Typography></TableCell>
                   <TableCell><Typography>{row.quantity}</Typography></TableCell>
                   <TableCell><Typography>{row.selling_price}</Typography></TableCell>
-                  <TableCell>{row.taxable_amount.toFixed(2)}</TableCell>   
+                  <TableCell>{row.taxable_amount?.toFixed(2)}</TableCell>   
                   <TableCell> {row.cgst}</TableCell>
                   <TableCell>{row.sgst}</TableCell>
-                  <TableCell>{row.total.toFixed(2)}</TableCell>
+                  <TableCell>{row.total?.toFixed(2)}</TableCell>
                
                
                 </TableRow>
@@ -193,7 +193,7 @@ export default function CompleteBill() {
                 }}
               >
                    {forProduct.map((item) => (
-                  <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.name}</Typography>
+                  <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.hsn}</Typography>
                  ))} 
               </Box>
               <Box
@@ -238,7 +238,7 @@ export default function CompleteBill() {
                 }}
               >
                 {forProduct.map((item) => (
-                  <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.taxable_amount.toFixed(2)}</Typography>
+                  <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.taxable_amount?.toFixed(2)}</Typography>
                  ))} 
               </Box>
               <Box
@@ -252,7 +252,7 @@ export default function CompleteBill() {
                   mt:2
                 }}
               >
-                <Typography>{taxableamnttotal.toFixed(2)}</Typography>
+                <Typography>{taxableamnttotal?.toFixed(2)}</Typography>
               </Box>
             </Box>
           </Box>
@@ -310,7 +310,7 @@ export default function CompleteBill() {
                 </Box>
                 <Box sx={{ width: '50%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', }} >
                 {forProduct.map((item) => (
-                  <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.cgst.toFixed(2)}</Typography>
+                  <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.cgst?.toFixed(2)}</Typography>
                  ))} 
                 </Box>
               </Box>
@@ -326,7 +326,7 @@ export default function CompleteBill() {
                   mt:2
                 }}
               >
-                <Typography sx={{ mx: 1 }} >{cgsttotal.toFixed(2)}</Typography>
+                <Typography sx={{ mx: 1 }} >{cgsttotal?.toFixed(2)}</Typography>
               </Box>
             </Box>
             {/* CGST */}
@@ -371,7 +371,7 @@ export default function CompleteBill() {
                 </Box>
                 <Box sx={{ width: '50%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', overflowY: 'auto' }} >
                 {forProduct.map((item) => (
-                  <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.sgst.toFixed(2)}</Typography>
+                  <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.sgst?.toFixed(2)}</Typography>
                  ))} 
                 </Box>
               </Box>
@@ -387,7 +387,7 @@ export default function CompleteBill() {
                   mt:2
                 }}
               >
-                <Typography sx={{ mx: 1 }} >{sgsttotal.toFixed(2)}</Typography>
+                <Typography sx={{ mx: 1 }} >{sgsttotal?.toFixed(2)}</Typography>
               </Box>
             </Box>
             {/* Totalamount */}
@@ -417,7 +417,7 @@ export default function CompleteBill() {
 
                 <Box sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', overflowY: 'scroll' }} >
                 {forProduct.map((item) => (
-                  <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.total.toFixed(2)}</Typography>
+                  <Typography sx={{ fontSize: 15, m: 0.5 }}>{item.total?.toFixed(2)}</Typography>
                  ))} 
                 </Box>
               </Box>
@@ -433,7 +433,7 @@ export default function CompleteBill() {
                   mt:2
                 }}
               >
-                <Typography sx={{ mx: 1 }} >{finaltotal.toFixed(2)}</Typography>
+                <Typography sx={{ mx: 1 }} >{finaltotal?.toFixed(2)}</Typography>
               </Box>
             </Box>
           </Box>

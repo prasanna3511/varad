@@ -55,7 +55,8 @@ export default function FullFeaturedCrudGrid() {
   };
 
   const [data, setData] = useState([]);
-
+const [forupdate , setForUpdate]=useState(false)
+const [rowdata , setRowData]=useState({})
   useEffect(() => {
 
     async function getProducts() {
@@ -79,7 +80,8 @@ export default function FullFeaturedCrudGrid() {
   const handleRowClick = (row) => {
     console.log(row)
     setOpen(!open)
-
+    setRowData(row)
+    setForUpdate(true)
   }
 
   const columns = [
@@ -249,7 +251,7 @@ export default function FullFeaturedCrudGrid() {
             }
           />
         </Box>
-        {open && <AddInventory open={open} setOpen={setOpen} />}
+        {open && <AddInventory open={open} setOpen={setOpen} update={forupdate} rowdata={rowdata}/>}
 
       </Box>
 

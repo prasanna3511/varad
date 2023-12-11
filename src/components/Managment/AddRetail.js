@@ -15,13 +15,13 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 export default function AlertDialogSlide(props) {
-  console.log("this values from props" , props.forRow)
+  console.log("this values from props" , props.update)
 
   const handleClose = () => {
     props.setOpen(false);
   };
 
-  const [data, setData] = React.useState(props)
+  const [data, setData] = React.useState(props.rowdata)
 
   const handleChange = (key, value) => {
     setData({

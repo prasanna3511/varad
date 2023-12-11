@@ -87,9 +87,10 @@ export default function FullFeaturedCrudGrid() {
   const handleClick = () => {
     setOpen(!open)
   };
-
+const [rowdata , setRowData]=useState({})
   const handleRowClick = (row) => {
     console.log(row)
+    setRowData(row)
     setOpen(!open)
     setForUpdate(true)
 
@@ -266,7 +267,7 @@ export default function FullFeaturedCrudGrid() {
             }
           />
         </Box>
-        {open && <AddRetail open={open} setOpen={setOpen} update={forUpdate} />}
+        {open && <AddRetail open={open} setOpen={setOpen} update={forUpdate} rowdata={rowdata} />}
 
       </Box>
 

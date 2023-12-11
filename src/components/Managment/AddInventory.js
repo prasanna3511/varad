@@ -51,7 +51,7 @@ export default function AlertDialogSlide(props) {
     props.setOpen(false);
   };
 
-  const [data, setData] = React.useState({})
+  const [data, setData] = React.useState(props.rowdata)
   const handleChange = (key, value) => {
     setData({
       ...data,

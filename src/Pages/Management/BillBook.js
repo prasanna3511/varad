@@ -66,6 +66,42 @@ console.log("all invoice : ",response.data.data)
     navigate('/completebill',{state :{hello:true,row}})
 
   }
+
+  const handleDelete =async (e,rowId) => {
+    // Implement your logic to delete the row with the given ID
+    e.stopPropagation();
+    console.log("rowid is " + rowId)
+    let dataid={
+      id:rowId
+    }
+    try {
+console.log(dataid)
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/deletebill`, dataid,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }
+      )
+
+      console.log(response.data)
+
+      if(response.data.status){
+        window.location.reload()
+        // handleClose()
+      }
+
+    } catch (e) {
+      console.log(e)
+    }
+
+    console.log(`Deleting row with ID: ${rowId}`);
+
+    // Example: Remove the row from the state
+    const updatedData = data.filter((row) => row.id !== rowId);
+    setData(updatedData);
+   
+  };
   return (
     <Box
       sx={{
@@ -120,6 +156,8 @@ console.log("all invoice : ",response.data.data)
                 <TableCell>Total Amount</TableCell>
                 <TableCell>Mobile Number</TableCell>
                 <TableCell>Billing Date</TableCell>
+                <TableCell></TableCell>
+
 
 
 
@@ -147,6 +185,12 @@ console.log("all invoice : ",response.data.data)
                   <TableCell>
                   {new Date(row.invoice_date).toISOString().slice(0, 10)}
                   </TableCell>
+                  <TableCell>
+                  <DeleteIcon 
+                  onClick={(e) =>handleDelete(e,row.id)}
+                    sx={{ cursor: 'pointer' , color:'#FF6B35' }}
+                  />
+                </TableCell>
                
                 </TableRow>
               ))}

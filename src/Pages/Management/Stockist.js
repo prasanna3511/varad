@@ -23,6 +23,8 @@ import { display } from '@mui/system';
 import AddStokcist from '../../components/Managment/AddStokcist'
 import { Typography } from '@mui/material';
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
+
 
 const roles = ['Market', 'Finance', 'Development'];
 const randomRole = () => {
@@ -61,9 +63,10 @@ export default function FullFeaturedCrudGrid() {
     async function getProducts() {
       try {
 
-        let response = await axios.get(`${process.env.REACT_APP_API_URL}/getstockist`)
+        let response = await axios.get(`${process.env.REACT_APP_API_URL}/getpurchase`)
 
         if (response.data.status) {
+          console.log("your data i got now ",response.data)
           setData(response.data.data)
         }
 
@@ -73,13 +76,16 @@ export default function FullFeaturedCrudGrid() {
     }
     getProducts()
   }, [])
-
+  const navigate = useNavigate();
   const [uprow , setUpRow] = useState({})
+  const [update , setUpdate]=useState(false)
   const handleRowClick = (row) => {
     console.log("row data is",row)
-    setOpen(!open)
+    // setOpen(!open)
+    // fetchData(row.purchase_id)
     setUpRow(row)
-
+    setUpdate(true)
+    navigate('/stockistbill',{state :{hello:true,row}})
   }
 
   const columns = [
@@ -155,8 +161,39 @@ export default function FullFeaturedCrudGrid() {
         </>
       },
     },
+    {
+      field: 'purchase_date',
+      headerName: 'GST',
+      // type: 'number',
+      width: 210, align: 'center',
+      headerAlign: 'center',
+      editable: true,
+      renderCell: (params) => {
+        return <>
+
+          <Typography
+            sx={{}}
+            onClick={() => {
+              handleRowClick(params.row)
+            }}>
+              {/* {params.row.purchase_date} */}
+              {params.row.purchase_date ? new Date(params.row.purchase_date).toISOString().split('T')[0] : ''}
+
+              </Typography>
+        </>
+      },
+    },
 
   ];
+
+  const handleDelete = (rowId) => {
+    // Implement your logic to delete the row with the given ID
+    console.log(`Deleting row with ID: ${rowId}`);
+
+    // Example: Remove the row from the state
+    const updatedData = data.filter((row) => row.id !== rowId);
+    setData(updatedData);
+  };
 
   return (
     <Box
@@ -194,6 +231,7 @@ export default function FullFeaturedCrudGrid() {
 
           <DataGrid
             rows={data}
+            key={data.id}
             columns={columns}
             editMode="row"
             rowModesModel={rowModesModel}
