@@ -53,10 +53,11 @@ export default function FullFeaturedCrudGrid() {
   const handleClick = () => {
     setOpen(!open)
   };
-
+  const [loading, setLoading] = useState(true); 
   const [data, setData] = useState([]);
 const [forupdate , setForUpdate]=useState(false)
 const [rowdata , setRowData]=useState({})
+const [refetchedData, setRefetchedData] = useState([]);
   useEffect(() => {
 
     async function getProducts() {
@@ -66,10 +67,12 @@ const [rowdata , setRowData]=useState({})
 
         if (response.data.status) {
           setData(response.data.data)
+          setLoading(false);
         }
 
       } catch (err) {
-        console.log(err)
+        console.log(err);
+        setLoading(false);
       }
     }
 
@@ -77,6 +80,24 @@ const [rowdata , setRowData]=useState({})
 
   }, [])
 
+  useEffect(() => {
+    async function getProducts() {
+      try {
+        let response = await axios.get(`${process.env.REACT_APP_API_URL}/getproducts`);
+  
+        if (response.data.status) {
+          setData(response.data.data);
+          setLoading(false);
+        }
+      } catch (err) {
+        console.log(err);
+        setLoading(false);
+      }
+    }
+  
+    getProducts();
+  }, [refetchedData]); 
+ 
   const handleRowClick = (row) => {
     console.log(row)
     setOpen(!open)
@@ -226,6 +247,9 @@ const [rowdata , setRowData]=useState({})
               Add Product
             </Button>
           </Box>
+          {loading ? (
+            <Typography>Loading...</Typography>
+          ) : (
 
           <DataGrid
             rows={data}
@@ -250,8 +274,10 @@ const [rowdata , setRowData]=useState({})
               }
             }
           />
+          )}
+
         </Box>
-        {open && <AddInventory open={open} setOpen={setOpen} update={forupdate} rowdata={rowdata}/>}
+        {open && <AddInventory open={open} setOpen={setOpen} setRefetchedData={setRefetchedData} update={forupdate} rowdata={rowdata}/>}
 
       </Box>
 

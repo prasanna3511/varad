@@ -6,7 +6,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
-import { Box, TextField, Typography } from '@mui/material';
+import { Box, CircularProgress, TextField, Typography } from '@mui/material';
 import { display } from '@mui/system';
 import axios from 'axios';
 
@@ -16,6 +16,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export default function AlertDialogSlide(props) {
   console.log("this values from props" , props.update)
+  const [loading, setLoading] = React.useState(false);
 
   const handleClose = () => {
     props.setOpen(false);
@@ -31,6 +32,31 @@ export default function AlertDialogSlide(props) {
   };
 
   const addProduct = async () => {
+    setLoading(true);
+
+if(props?.update) {
+  try{
+
+    const response = await axios.patch(`${process.env.REACT_APP_API_URL}/updateretailers`, data,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      }
+    )
+
+    if(response.data.status){
+      props.setRefetchedData(response.data.data);
+      // window.location.reload();
+      props.setOpen(false);
+      setLoading(false);
+    }
+
+  }catch(err){
+    console.log(err);
+  }
+}
+else{
 
     try{
 
@@ -43,17 +69,41 @@ export default function AlertDialogSlide(props) {
       )
 
       if(response.data.status){
+        // props.setRefetchedData(response.data.data);
         window.location.reload();
-      }
+        // props.setOpen(false);
+        // setLoading(false);    
+        }
 
     }catch(err){
       console.log(err);
     }
-
+  }
   }
 
   return (
     <Box sx={{ width: '100%' }} >
+        <Box sx={{ position: 'relative' }}>
+      {/* Dim overlay when loading is true */}
+      {loading && (
+        <Box
+          sx={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 9999,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <CircularProgress size={34} />
+        </Box>
+      )}
+      </Box>
       <Dialog
         open={props.open}
         TransitionComponent={Transition}

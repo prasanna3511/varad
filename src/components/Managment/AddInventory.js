@@ -6,7 +6,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
-import { Box, TextField, Typography } from '@mui/material';
+import { Box, CircularProgress, TextField, Typography } from '@mui/material';
 import { display } from '@mui/system';
 import axios from 'axios';
 
@@ -16,36 +16,56 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export default function AlertDialogSlide(props) {
   const [open, setOpen] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
 
   const handleClickOpen = () => {
     props.setOpen(true);
   };
 
-
+  
   const addProducts = async () => {
+    setLoading(true);
 
     try {
 
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/addproduct`, data,
-        {
-          headers: {
-            'Content-Type': 'application/json',
+      if (props?.update) {
+        const response = await axios.patch(
+          `${process.env.REACT_APP_API_URL}/updateproduct`,
+          data,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
           }
+        );
+
+        if (response.data.status) {
+          props.setRefetchedData(response.data.data);
+          // window.location.reload();
+          props.setOpen(false);
+          setLoading(false);
         }
-      )
+      } else {
+        const response = await axios.post(`${process.env.REACT_APP_API_URL}/addproduct`,data,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
 
-      console.log(response.data)
-
-      if(response.data.status){
-        window.location.reload()
-        // handleClose()
+        if (response.data.status) {
+          props.setRefetchedData(response.data.data);
+          // window.location.reload();
+          props.setOpen(false);
+          setLoading(false);
+        }
       }
-
     } catch (e) {
-      console.log(e)
-    }
+      console.error(e);
+    } 
+  };
 
-  }
 
   const handleClose = () => {
     props.setOpen(false);
@@ -60,7 +80,27 @@ export default function AlertDialogSlide(props) {
   };
   return (
     <Box sx={{ width: '100%' }} >
-
+  <Box sx={{ position: 'relative' }}>
+      {/* Dim overlay when loading is true */}
+      {loading && (
+        <Box
+          sx={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 9999,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <CircularProgress size={34} />
+        </Box>
+      )}
+      </Box>
       <Dialog
         open={props.open}
         TransitionComponent={Transition}
@@ -69,6 +109,7 @@ export default function AlertDialogSlide(props) {
         aria-describedby="alert-dialog-slide-description"
       // sx={{width:600}}
       >
+
         <Box sx={{ width: 550, height: 500, display: 'flex' }} >
           <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }} >
             <Box sx={{ width: '80%', display: "flex", justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }} >

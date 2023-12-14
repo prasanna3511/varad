@@ -57,6 +57,7 @@ export default function FullFeaturedCrudGrid() {
   const [rowModesModel, setRowModesModel] = useState({});
   const [open, setOpen] = useState(false)
   const [forUpdate, setForUpdate] = useState(false)
+  const [refetchedData, setRefetchedData] = useState([]);
 
   useEffect(() => {
 
@@ -82,7 +83,29 @@ export default function FullFeaturedCrudGrid() {
 
   }, [])
 
+  useEffect(() => {
 
+    async function fetchData() {
+
+      try {
+
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/getretailers`)
+
+        if (response.data.status) {
+          console.log(response.data.data)
+          setData(response.data.data)
+        }
+
+      } catch (e) {
+
+        console.log(e);
+
+      }
+    }
+
+    fetchData();
+
+  }, [refetchedData])
 
   const handleClick = () => {
     setOpen(!open)
@@ -267,7 +290,7 @@ const [rowdata , setRowData]=useState({})
             }
           />
         </Box>
-        {open && <AddRetail open={open} setOpen={setOpen} update={forUpdate} rowdata={rowdata} />}
+        {open && <AddRetail open={open} setOpen={setOpen} setRefetchedData={setRefetchedData} update={forUpdate} rowdata={rowdata} />}
 
       </Box>
 
